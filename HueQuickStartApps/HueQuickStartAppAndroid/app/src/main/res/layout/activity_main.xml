@@ -31,9 +31,10 @@
         android:id="@+id/pushlink_image"
         android:layout_width="match_parent"
         android:layout_height="300dp"
-        android:visibility="visible"
+        android:contentDescription=""
         android:scaleType="fitXY"
-        app:srcCompat="@drawable/pushlink_image"/>
+        android:visibility="visible"
+        app:srcCompat="@drawable/pushlink_image" />
 
     <ListView
         android:id="@+id/bridge_discovery_result_list"
@@ -45,14 +46,14 @@
         android:id="@+id/randomize_lights_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone"
-        android:text="Randomize lights"
-        android:layout_marginBottom="8dp"/>
+        android:layout_marginBottom="8dp"
+        android:text="@string/random_lights"
+        android:visibility="gone" />
 
     <Button
         android:id="@+id/bridge_discovery_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Re-run bridge discovery" />
+        android:text="@string/rerun_bridge_discovery" />
 
 </LinearLayout>

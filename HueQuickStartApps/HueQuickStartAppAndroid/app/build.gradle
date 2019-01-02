@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 26
-    buildToolsVersion "26.0.0"
+    buildToolsVersion '28.0.3'
     defaultConfig {
         applicationId "com.philips.lighting.hue.demo.huequickstartapp"
         minSdkVersion 19
@@ -20,9 +20,9 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    api fileTree(dir: 'libs', include: ['*.jar'])
 
-    compile 'com.android.support:appcompat-v7:26.+'
-    compile 'com.android.support.constraint:constraint-layout:1.0.2'
-    compile 'com.android.support:design:26.+'
+    api 'com.android.support:appcompat-v7:26.+'
+    api 'com.android.support.constraint:constraint-layout:1.0.2'
+    api 'com.android.support:design:26.+'
 }
