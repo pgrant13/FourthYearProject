@@ -1,6 +1,7 @@
 <resources>
-    <string name="app_name">HueQuickStartApp</string>
+    <string name="app_name">Hue Testing - Jan 2</string>
     <string name="title_activity_bridge_discovery">BridgeDiscoveryActivity</string>
-    <string name="random_lights">Randomize Lights - Jan 2</string>
+    <string name="random_lights">Randomize Lights</string>
+    <string name="toggle_lights">Toggle Lights</string>
     <string name="rerun_bridge_discovery">Re-run bridge discovery</string>
 </resources>

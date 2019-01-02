@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TextView bridgeIpTextView;
     private View pushlinkImage;
     private Button randomizeLightsButton;
+    private Button toggleLightsButton;
     private Button bridgeDiscoveryButton;
 
     enum UIState {
@@ -82,6 +83,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         bridgeDiscoveryButton.setOnClickListener(this);
         randomizeLightsButton = (Button)findViewById(R.id.randomize_lights_button);
         randomizeLightsButton.setOnClickListener(this);
+        toggleLightsButton = (Button)findViewById(R.id.toggle_lights_button);
+        toggleLightsButton.setOnClickListener(this);
 
         // Connect to a bridge or start the bridge discovery
         String bridgeIp = getLastUsedBridgeIp();
@@ -271,7 +274,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         Random rand = new Random();
 
-        for (final LightPoint light : lights) {
+        for (final LightPoint light : lights) { // this loops through each connected light
             final LightState lightState = new LightState();
 
             lightState.setHue(rand.nextInt(MAX_HUE));
@@ -292,6 +295,59 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    /**
+     * Toggle all the lights of the bridge
+     */
+    private void toggleLights() {
+        BridgeState bridgeState = bridge.getBridgeState();
+        List<LightPoint> lights = bridgeState.getLights();
+
+        int hueColour = 42337; //this will change based on which colour we want. 6000 is sunny
+
+        for (final LightPoint light : lights) { // this loops through each connected light
+            LightState lightState = light.getLightState();
+
+            //Log.i(TAG, "Colour of Hue is " + lightState.getHue()); // get the current hue colour
+
+            if (!lightState.isOn()) { //if the light is off, turn it on
+                lightState.setOn(true);
+                lightState.setHue(hueColour);
+
+                light.updateState(lightState, BridgeConnectionType.LOCAL, new BridgeResponseCallback() {
+                    @Override
+                    public void handleCallback(Bridge bridge, ReturnCode returnCode, List<ClipResponse> list, List<HueError> errorList) {
+                        if (returnCode == ReturnCode.SUCCESS) {
+                            Log.i(TAG, "Turned ON light of hue light " + light.getIdentifier());
+                        } else {
+                            Log.e(TAG, "Error turning ON hue light " + light.getIdentifier());
+                            for (HueError error : errorList) {
+                                Log.e(TAG, error.toString());
+                            }
+                        }
+                    }
+                });
+            }
+
+            else{ //the light is on so turn it off
+                lightState.setOn(false);
+
+                light.updateState(lightState, BridgeConnectionType.LOCAL, new BridgeResponseCallback() {
+                    @Override
+                    public void handleCallback(Bridge bridge, ReturnCode returnCode, List<ClipResponse> list, List<HueError> errorList) {
+                        if (returnCode == ReturnCode.SUCCESS) {
+                            Log.i(TAG, "Turned OFF light of hue light " + light.getIdentifier());
+                        } else {
+                            Log.e(TAG, "Error turning OFF hue light " + light.getIdentifier());
+                            for (HueError error : errorList) {
+                                Log.e(TAG, error.toString());
+                            }
+                        }
+                    }
+                });
+            }
+        }
+    }
+
     // UI methods
 
     @Override
@@ -305,6 +361,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View view) {
         if (view == randomizeLightsButton) {
             randomizeLights();
+        }
+
+        if (view == toggleLightsButton) {
+            toggleLights();
         }
 
         if (view == bridgeDiscoveryButton) {
@@ -323,6 +383,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 bridgeIpTextView.setVisibility(View.GONE);
                 pushlinkImage.setVisibility(View.GONE);
                 randomizeLightsButton.setVisibility(View.GONE);
+                toggleLightsButton.setVisibility(View.GONE);
                 bridgeDiscoveryButton.setVisibility(View.GONE);
 
                 switch (state) {
@@ -347,6 +408,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     case Connected:
                         bridgeIpTextView.setVisibility(View.VISIBLE);
                         randomizeLightsButton.setVisibility(View.VISIBLE);
+                        toggleLightsButton.setVisibility(View.VISIBLE);
                         bridgeDiscoveryButton.setVisibility(View.VISIBLE);
                         break;
                 }
