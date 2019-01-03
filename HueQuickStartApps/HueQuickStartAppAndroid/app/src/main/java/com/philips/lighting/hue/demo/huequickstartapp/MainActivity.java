@@ -1,6 +1,8 @@
 package com.philips.lighting.hue.demo.huequickstartapp;
 
+import android.app.TimePickerDialog;
 import android.provider.Settings;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,6 +11,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.TimePicker;
 
 import com.philips.lighting.hue.sdk.wrapper.HueLog;
 import com.philips.lighting.hue.sdk.wrapper.Persistence;
@@ -38,7 +41,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemClickListener, TimePickerDialog.OnTimeSetListener {
 
     private static final String TAG = "HueQuickStartApp";
 
@@ -57,7 +60,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private View pushlinkImage;
     private Button randomizeLightsButton;
     private Button toggleLightsButton;
+    private Button alarmLightsButton;
     private Button bridgeDiscoveryButton;
+    private TextView alarmTimeTextView;
+    private Button selectAlarmTimeButton;
 
     enum UIState {
         Idle,
@@ -85,6 +91,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         randomizeLightsButton.setOnClickListener(this);
         toggleLightsButton = (Button)findViewById(R.id.toggle_lights_button);
         toggleLightsButton.setOnClickListener(this);
+        alarmLightsButton = (Button)findViewById(R.id.alarm_lights_button);
+        alarmLightsButton.setOnClickListener(this);
+        alarmTimeTextView = (TextView)findViewById(R.id.alarm_time_text);
+        selectAlarmTimeButton = (Button)findViewById(R.id.select_alarm_time_button);
+        selectAlarmTimeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DialogFragment timePicker = new TimePickerFragment();
+                timePicker.show(getSupportFragmentManager(), "time picker");
+            }
+        });
+
 
         // Connect to a bridge or start the bridge discovery
         String bridgeIp = getLastUsedBridgeIp();
@@ -302,7 +320,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         BridgeState bridgeState = bridge.getBridgeState();
         List<LightPoint> lights = bridgeState.getLights();
 
-        int hueColour = 42337; //this will change based on which colour we want. 6000 is sunny
+        int hueColour = 42337; //this will change based on which colour we want. 42337 is sunny
 
         for (final LightPoint light : lights) { // this loops through each connected light
             LightState lightState = light.getLightState();
@@ -348,7 +366,47 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    /**
+     * Turn ON all the lights of the bridge ****************** to be used when alarm goes off
+     */
+    private void alarmLights() {
+        BridgeState bridgeState = bridge.getBridgeState();
+        List<LightPoint> lights = bridgeState.getLights();
+
+        int hueColour = 42337; //this will change based on which colour we want. 42337 is sunny
+
+        for (final LightPoint light : lights) { // this loops through each connected light
+            LightState lightState = light.getLightState();
+
+            //Log.i(TAG, "Colour of Hue is " + lightState.getHue()); // get the current hue colour
+
+            lightState.setOn(true);
+            lightState.setHue(hueColour);
+
+            light.updateState(lightState, BridgeConnectionType.LOCAL, new BridgeResponseCallback() {
+                @Override
+                public void handleCallback(Bridge bridge, ReturnCode returnCode, List<ClipResponse> list, List<HueError> errorList) {
+                    if (returnCode == ReturnCode.SUCCESS) {
+                        Log.i(TAG, "Turned ON light of hue light " + light.getIdentifier());
+                    } else {
+                        Log.e(TAG, "Error turning ON hue light " + light.getIdentifier());
+                        for (HueError error : errorList) {
+                            Log.e(TAG, error.toString());
+                        }
+                    }
+                }
+            });
+
+        }
+    }
+
     // UI methods
+
+
+    @Override
+    public void onTimeSet(TimePicker timePicker, int hour, int minute) { //when the user selects the time of the alarm, we will display the alarm and activate it? ***
+        alarmTimeTextView.setText("Hour: " + hour + " Minute: " +minute);
+    }
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -367,6 +425,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             toggleLights();
         }
 
+        // todo: if alarm button is clicked we want the alarm for ie, 7am to be set or will we use a switch for ON/OFF
+
         if (view == bridgeDiscoveryButton) {
             startBridgeDiscovery();
         }
@@ -384,7 +444,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 pushlinkImage.setVisibility(View.GONE);
                 randomizeLightsButton.setVisibility(View.GONE);
                 toggleLightsButton.setVisibility(View.GONE);
+                alarmLightsButton.setVisibility(View.GONE);
                 bridgeDiscoveryButton.setVisibility(View.GONE);
+                alarmTimeTextView.setVisibility(View.GONE);
+                selectAlarmTimeButton.setVisibility(View.GONE);
 
                 switch (state) {
                     case Idle:
@@ -409,7 +472,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         bridgeIpTextView.setVisibility(View.VISIBLE);
                         randomizeLightsButton.setVisibility(View.VISIBLE);
                         toggleLightsButton.setVisibility(View.VISIBLE);
+                        alarmLightsButton.setVisibility(View.VISIBLE);
                         bridgeDiscoveryButton.setVisibility(View.VISIBLE);
+                        alarmTimeTextView.setVisibility(View.VISIBLE);
+                        selectAlarmTimeButton.setVisibility(View.VISIBLE);
                         break;
                 }
             }
