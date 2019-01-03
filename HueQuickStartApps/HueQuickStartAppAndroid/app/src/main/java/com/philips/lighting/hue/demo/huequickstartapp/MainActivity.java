@@ -3,8 +3,10 @@ package com.philips.lighting.hue.demo.huequickstartapp;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -15,6 +17,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.philips.lighting.hue.sdk.wrapper.connection.BridgeConnection;
 import com.philips.lighting.hue.sdk.wrapper.connection.BridgeConnectionCallback;
@@ -111,6 +114,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
+        registerReceiver(broadcastReceiver, new IntentFilter("ALARM_RECEIVED")); //***************************************************************
 
         // Connect to a bridge or start the bridge discovery
         String bridgeIp = getLastUsedBridgeIp();
@@ -328,16 +332,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         BridgeState bridgeState = bridge.getBridgeState();
         List<LightPoint> lights = bridgeState.getLights();
 
-        int hueColour = 42337; //this will change based on which colour we want. 42337 is sunny
+        int hueColour = 42337; //(0-65535)this will change based on which colour we want. 42337 is sunny
+        int hueBrightness = 200; //(0-254)this is the brightness
 
         for (final LightPoint light : lights) { // this loops through each connected light
-            LightState lightState = light.getLightState();
-
-            //Log.i(TAG, "Colour of Hue is " + lightState.getHue()); // get the current hue colour
+            //final LightState lightState = new LightState(); //this has no light flickering but can't read current state of the lights
+            final LightState lightState = light.getLightState(); //using this to read the state of the lights but it causes flickering
+            //of the lights. Probably need to use this to read in the current brightness and increase by xx% each interval
 
             if (!lightState.isOn()) { //if the light is off, turn it on
                 lightState.setOn(true);
                 lightState.setHue(hueColour);
+                lightState.setBrightness(hueBrightness);
 
                 light.updateState(lightState, BridgeConnectionType.LOCAL, new BridgeResponseCallback() {
                     @Override
@@ -381,15 +387,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         BridgeState bridgeState = bridge.getBridgeState();
         List<LightPoint> lights = bridgeState.getLights();
 
-        int hueColour = 42337; //this will change based on which colour we want. 42337 is sunny
+        int hueColour = 42337; //(0-65535)this will change based on which colour we want. 42337 is sunny
+        int hueBrightness = 200; //(0-254)this is the brightness
 
         for (final LightPoint light : lights) { // this loops through each connected light
-            LightState lightState = light.getLightState();
-
-            //Log.i(TAG, "Colour of Hue is " + lightState.getHue()); // get the current hue colour
+            final LightState lightState = new LightState();
 
             lightState.setOn(true);
             lightState.setHue(hueColour);
+            lightState.setBrightness(hueBrightness);
 
             light.updateState(lightState, BridgeConnectionType.LOCAL, new BridgeResponseCallback() {
                 @Override
@@ -411,31 +417,59 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //to update the text showing alarm time
     private void updateAlarmTimeText(Calendar c){
         String timeText = "Alarm set for: ";
+        //append the short date format (hour and minute) to the string
         timeText += DateFormat.getTimeInstance(DateFormat.SHORT).format(c.getTime());
+        //display the string in the text view
         alarmTimeTextView.setText(timeText);
     }
 
     //Start the alarm
     private void startAlarm(Calendar c){
+        //create a pending intent which will trigger at the moment of the alarm
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(this, AlarmReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 1, intent, 0);
 
+        // if the set time is before the current time, add 1 day to the time so the alarm is tomorrow
         if (c.before(Calendar.getInstance())){
             c.add(Calendar.DATE, 1);
         }
 
+        //set the alarm manager to wake up the device with the alarm receiver intent at the exact time
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pendingIntent);
     }
 
     //Cancel the alarm
     private void cancelAlarm(){
+        //same as above for startAlarm()
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(this, AlarmReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 1, intent, 0);
 
+        //cancel the pending intent for the alarm
         alarmManager.cancel(pendingIntent);
         alarmTimeTextView.setText("Alarm Canceled");
+    }
+
+    // broadcastReceiver from the AlarmReceiver class. Used to call the alarm functions
+    BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            alarmLights();//turn on the hue lights
+
+            //Toast message in case lights not working
+            CharSequence text = "Alarm is Working!";
+            int duration = Toast.LENGTH_LONG;
+
+            Toast toast = Toast.makeText(context, text, duration);
+            toast.show();
+        }
+    };
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(broadcastReceiver);
     }
 
     // UI methods
@@ -449,7 +483,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         c.set(Calendar.SECOND, 0);
 
         updateAlarmTimeText(c);
-        startAlarm(c); //to implement function
+        startAlarm(c);
     }
 
     //when the user clicks on the bridge they wish to connect to
@@ -470,8 +504,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (view == toggleLightsButton) {
             toggleLights();
         }
-
-        // todo: if alarm button is clicked we want the alarm for ie, 7am to be set or will we use a switch for ON/OFF
 
         if (view == bridgeDiscoveryButton) {
             startBridgeDiscovery();
@@ -515,7 +547,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         bridgeDiscoveryButton.setVisibility(View.VISIBLE);
                         break;
                     case Connected:
-                        bridgeIpTextView.setVisibility(View.VISIBLE);
+                        statusTextView.setVisibility(View.GONE);
                         randomizeLightsButton.setVisibility(View.VISIBLE);
                         toggleLightsButton.setVisibility(View.VISIBLE);
                         bridgeDiscoveryButton.setVisibility(View.VISIBLE);

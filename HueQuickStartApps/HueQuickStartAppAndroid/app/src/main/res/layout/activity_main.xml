@@ -43,6 +43,12 @@
         android:visibility="gone"/>
 
     <Button
+        android:id="@+id/bridge_discovery_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/rerun_bridge_discovery" />
+
+    <Button
         android:id="@+id/randomize_lights_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -57,12 +63,6 @@
         android:layout_marginBottom="8dp"
         android:text="@string/toggle_lights"
         android:visibility="gone" />
-
-    <Button
-        android:id="@+id/bridge_discovery_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/rerun_bridge_discovery" />
 
     <TextView
         android:id="@+id/alarm_time_text"
