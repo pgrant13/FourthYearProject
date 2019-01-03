@@ -1,7 +1,10 @@
 package com.philips.lighting.hue.demo.huequickstartapp;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
-import android.provider.Settings;
+import android.content.Context;
+import android.content.Intent;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,8 +16,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
-import com.philips.lighting.hue.sdk.wrapper.HueLog;
-import com.philips.lighting.hue.sdk.wrapper.Persistence;
 import com.philips.lighting.hue.sdk.wrapper.connection.BridgeConnection;
 import com.philips.lighting.hue.sdk.wrapper.connection.BridgeConnectionCallback;
 import com.philips.lighting.hue.sdk.wrapper.connection.BridgeConnectionType;
@@ -36,6 +37,8 @@ import com.philips.lighting.hue.sdk.wrapper.domain.device.light.LightState;
 import com.philips.lighting.hue.sdk.wrapper.knownbridges.KnownBridge;
 import com.philips.lighting.hue.sdk.wrapper.knownbridges.KnownBridges;
 
+import java.text.DateFormat;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -60,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private View pushlinkImage;
     private Button randomizeLightsButton;
     private Button toggleLightsButton;
-    private Button alarmLightsButton;
+    private Button cancelAlarmButton;
     private Button bridgeDiscoveryButton;
     private TextView alarmTimeTextView;
     private Button selectAlarmTimeButton;
@@ -91,8 +94,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         randomizeLightsButton.setOnClickListener(this);
         toggleLightsButton = (Button)findViewById(R.id.toggle_lights_button);
         toggleLightsButton.setOnClickListener(this);
-        alarmLightsButton = (Button)findViewById(R.id.alarm_lights_button);
-        alarmLightsButton.setOnClickListener(this);
         alarmTimeTextView = (TextView)findViewById(R.id.alarm_time_text);
         selectAlarmTimeButton = (Button)findViewById(R.id.select_alarm_time_button);
         selectAlarmTimeButton.setOnClickListener(new View.OnClickListener() {
@@ -100,6 +101,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onClick(View view) {
                 DialogFragment timePicker = new TimePickerFragment();
                 timePicker.show(getSupportFragmentManager(), "time picker");
+            }
+        });
+        cancelAlarmButton = (Button)findViewById(R.id.cancel_alarm_button);
+        cancelAlarmButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                cancelAlarm();//to implement function
             }
         });
 
@@ -400,14 +408,51 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    // UI methods
-
-
-    @Override
-    public void onTimeSet(TimePicker timePicker, int hour, int minute) { //when the user selects the time of the alarm, we will display the alarm and activate it? ***
-        alarmTimeTextView.setText("Hour: " + hour + " Minute: " +minute);
+    //to update the text showing alarm time
+    private void updateAlarmTimeText(Calendar c){
+        String timeText = "Alarm set for: ";
+        timeText += DateFormat.getTimeInstance(DateFormat.SHORT).format(c.getTime());
+        alarmTimeTextView.setText(timeText);
     }
 
+    //Start the alarm
+    private void startAlarm(Calendar c){
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(this, AlarmReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 1, intent, 0);
+
+        if (c.before(Calendar.getInstance())){
+            c.add(Calendar.DATE, 1);
+        }
+
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pendingIntent);
+    }
+
+    //Cancel the alarm
+    private void cancelAlarm(){
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(this, AlarmReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 1, intent, 0);
+
+        alarmManager.cancel(pendingIntent);
+        alarmTimeTextView.setText("Alarm Canceled");
+    }
+
+    // UI methods
+
+    //when the user selects the time of the alarm, we will display the alarm time and activate it
+    @Override
+    public void onTimeSet(TimePicker timePicker, int hour, int minute) {
+        Calendar c = Calendar.getInstance();
+        c.set(Calendar.HOUR_OF_DAY, hour);
+        c.set(Calendar.MINUTE, minute);
+        c.set(Calendar.SECOND, 0);
+
+        updateAlarmTimeText(c);
+        startAlarm(c); //to implement function
+    }
+
+    //when the user clicks on the bridge they wish to connect to
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         String bridgeIp = bridgeDiscoveryResults.get(i).getIP();
@@ -415,6 +460,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         connectToBridge(bridgeIp);
     }
 
+    //when the user clicks on one of the buttons
     @Override
     public void onClick(View view) {
         if (view == randomizeLightsButton) {
@@ -444,10 +490,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 pushlinkImage.setVisibility(View.GONE);
                 randomizeLightsButton.setVisibility(View.GONE);
                 toggleLightsButton.setVisibility(View.GONE);
-                alarmLightsButton.setVisibility(View.GONE);
                 bridgeDiscoveryButton.setVisibility(View.GONE);
                 alarmTimeTextView.setVisibility(View.GONE);
                 selectAlarmTimeButton.setVisibility(View.GONE);
+                cancelAlarmButton.setVisibility(View.GONE);
 
                 switch (state) {
                     case Idle:
@@ -472,10 +518,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         bridgeIpTextView.setVisibility(View.VISIBLE);
                         randomizeLightsButton.setVisibility(View.VISIBLE);
                         toggleLightsButton.setVisibility(View.VISIBLE);
-                        alarmLightsButton.setVisibility(View.VISIBLE);
                         bridgeDiscoveryButton.setVisibility(View.VISIBLE);
                         alarmTimeTextView.setVisibility(View.VISIBLE);
                         selectAlarmTimeButton.setVisibility(View.VISIBLE);
+                        cancelAlarmButton.setVisibility(View.VISIBLE);
                         break;
                 }
             }

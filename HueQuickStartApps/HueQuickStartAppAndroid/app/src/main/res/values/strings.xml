@@ -3,8 +3,8 @@
     <string name="title_activity_bridge_discovery">BridgeDiscoveryActivity</string>
     <string name="random_lights">Randomize Lights</string>
     <string name="toggle_lights">Toggle Lights</string>
-    <string name="alarm_lights">Turn on Hue Lights Alarm</string>
     <string name="rerun_bridge_discovery">Re-run bridge discovery</string>
-    <string name="alarm_time">time</string>
+    <string name="alarm_time">No Alarm Set</string>
     <string name="select_alarm_time">Select Alarm Time</string>
+    <string name="cancel_alarm">Cancel Alarm</string>
 </resources>

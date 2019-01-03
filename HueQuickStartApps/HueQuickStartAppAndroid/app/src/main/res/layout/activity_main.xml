@@ -59,14 +59,6 @@
         android:visibility="gone" />
 
     <Button
-        android:id="@+id/alarm_lights_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:text="@string/alarm_lights"
-        android:visibility="gone" />
-
-    <Button
         android:id="@+id/bridge_discovery_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -87,5 +79,13 @@
         android:layout_height="wrap_content"
         android:text="@string/select_alarm_time"
         android:visibility="gone"/>
+
+    <Button
+        android:id="@+id/cancel_alarm_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:text="@string/cancel_alarm"
+        android:visibility="gone" />
 
 </LinearLayout>
