@@ -7,6 +7,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.media.MediaPlayer;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -114,7 +118,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
-        registerReceiver(broadcastReceiver, new IntentFilter("ALARM_RECEIVED")); //***************************************************************
+        registerReceiver(broadcastReceiver, new IntentFilter("ALARM_RECEIVED")); //Alarm Receiver
 
         // Connect to a bridge or start the bridge discovery
         String bridgeIp = getLastUsedBridgeIp();
@@ -383,12 +387,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     /**
      * Turn ON all the lights of the bridge ****************** to be used when alarm goes off
      */
-    private void alarmLights() {
+    private void alarmHueLights() {
         BridgeState bridgeState = bridge.getBridgeState();
         List<LightPoint> lights = bridgeState.getLights();
 
         int hueColour = 42337; //(0-65535)this will change based on which colour we want. 42337 is sunny
-        int hueBrightness = 200; //(0-254)this is the brightness
+        int hueBrightness = 254; //(0-254)this is the brightness
 
         for (final LightPoint light : lights) { // this loops through each connected light
             final LightState lightState = new LightState();
@@ -414,6 +418,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    //to sound the phone's alarm
+    private void alarmPhoneSound(){
+        Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM); //get the default alarm sound
+        //Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), alarmSound); //make a ringtone of the alarm sound
+        //r.play(); //play the alarm sound
+        MediaPlayer mp = MediaPlayer.create(getApplicationContext(), alarmSound); //make a media player of the alarm sound
+        mp.start(); //play the alarm sound
+    }
+
     //to update the text showing alarm time
     private void updateAlarmTimeText(Calendar c){
         String timeText = "Alarm set for: ";
@@ -437,6 +450,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         //set the alarm manager to wake up the device with the alarm receiver intent at the exact time
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pendingIntent);
+        // use this if we want a repeating alarm daily
+        //alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
     }
 
     //Cancel the alarm
@@ -455,12 +470,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            alarmLights();//turn on the hue lights
+            //For now we will use all the different devices in the alarm
+
+            //if the Hue Lights are selected to be used by the user******:
+            alarmHueLights();//turn on the hue lights
+
+            //if phone alarm sound is selected to be used by the user****:
+            alarmPhoneSound();//turn on the phone sound alarm
+
+            //Need to make pop up to dismiss alarm ****
 
             //Toast message in case lights not working
             CharSequence text = "Alarm is Working!";
             int duration = Toast.LENGTH_LONG;
-
             Toast toast = Toast.makeText(context, text, duration);
             toast.show();
         }
