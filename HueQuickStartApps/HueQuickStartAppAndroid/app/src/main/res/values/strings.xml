@@ -7,6 +7,11 @@
     <string name="alarm_time">No Alarm Set</string>
     <string name="select_alarm_time">Select Alarm Time</string>
     <string name="cancel_alarm">Cancel Alarm</string>
+    <string name="devices_in_alarm">Devices to be used in the Alarm:</string>
+    <string name="phone_sound">Phone Sound</string>
+    <string name="hue_lights">Hue Lights</string>
+    <string name="smart_plug">Smart Plug</string>
+    <string name="watch_vibration">Smartwatch Vibration</string>
     <string name="alarm">Alarm! - Time to Wakeup</string>
     <string name="dismiss">Dismiss</string>
     <string name="snooze">Snooze</string>

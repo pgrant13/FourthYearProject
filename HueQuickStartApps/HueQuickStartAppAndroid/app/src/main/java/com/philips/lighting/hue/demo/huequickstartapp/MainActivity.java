@@ -20,6 +20,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -79,6 +80,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Uri alarmSound; //get the default alarm sound
     private MediaPlayer mp; //make a media player of the alarm sound
     private AlertDialog.Builder builder; //alert dialog for dismissing alarm
+    private CheckBox phoneSoundCheckbox;
+    private CheckBox hueLightsCheckbox;
+    private CheckBox smartPlugCheckbox;
+    private CheckBox watchVibrationCheckbox;
 
     enum UIState {
         Idle,
@@ -129,8 +134,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), alarmSound); //make a ringtone of the alarm sound
 
         registerReceiver(broadcastReceiver, new IntentFilter("ALARM_RECEIVED")); //Alarm Receiver
-
         builder = new AlertDialog.Builder(this); //Alert Dialog for Alarm Dismissing
+
+        phoneSoundCheckbox = (CheckBox) findViewById(R.id.phone_sound_checkbox);
+        hueLightsCheckbox = (CheckBox) findViewById(R.id.hue_lights_checkbox);
+        smartPlugCheckbox = (CheckBox) findViewById(R.id.smart_plug_checkbox);
+        watchVibrationCheckbox = (CheckBox) findViewById(R.id.watch_vibration_checkbox);
 
         // Connect to a bridge or start the bridge discovery
         String bridgeIp = getLastUsedBridgeIp();
@@ -436,12 +445,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //r.play(); //play the alarm sound
     }
 
+    //to turn on the smart plug's power
+    private void alarmSmartPlug(){
+        //to implement
+    }
+
+    //to begin vibrations on the smart watch
+    private void alarmWatchVibration(){
+        //to implement
+    }
+
     //to stop the sound on the phone's alarm
     private void dismissAlarmSound(){
         if (mp.isPlaying()) {
             mp.pause(); //stop the sound from playing
             mp.seekTo(0); //reset the media player to the start of the alarm
         }
+    }
+
+    //to stop the vibration on the watch
+    private void dismissWatchVibration(){
+        // to implement
     }
 
     //to update the text showing alarm time
@@ -483,17 +507,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         alarmTimeTextView.setText("Alarm Canceled");
     }
 
-    // broadcastReceiver from the AlarmReceiver class. Used to call the alarm functions
+    // broadcastReceiver from the AlarmReceiver class. Used to call the individual alarm functions
     BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            //For now we will use all the different devices in the alarm
-
             //if the Hue Lights are selected to be used by the user******:
-            alarmHueLights();//turn on the hue lights
+            if (hueLightsCheckbox.isChecked()) {
+                alarmHueLights();//turn on the hue lights
+            }
 
             //if phone alarm sound is selected to be used by the user****:
-            alarmPhoneSound();//turn on the phone sound alarm
+            if (phoneSoundCheckbox.isChecked()) {
+                alarmPhoneSound();//turn on the phone sound alarm
+            }
+
+            //if smart plug is selected to be used by the user****:
+            /*if (smartPlugCheckbox.isChecked()) {
+                alarmSmartPlug();//turn on the phone sound alarm
+            }*/
+
+            //if watch vibration is selected to be used by the user****:
+            /*if (watchVibrationCheckbox.isChecked()) {
+                alarmWatchVibration();//turn on the phone sound alarm
+            }*/
 
             //Alert message pop up dialog to dismiss alarm ****
             builder.setMessage(R.string.alarm)
