@@ -150,6 +150,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    //need an onStop, onRestart, onStart?
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(broadcastReceiver);
+    }
+
+    //---------------------------------------------Hue Default Methods----------------------------------------------------------
+
     /**
      * Use the KnownBridges API to retrieve the last connected bridge
      * @return Ip address of the last connected bridge, or null
@@ -405,6 +416,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    //---------------------------------------------My Methods--------------------------------------------------
+
     /**
      * Turn ON all the lights of the bridge when alarm goes off
      */
@@ -549,12 +562,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             alertdialog.show();
         }
     };
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        unregisterReceiver(broadcastReceiver);
-    }
 
     // UI methods
 
