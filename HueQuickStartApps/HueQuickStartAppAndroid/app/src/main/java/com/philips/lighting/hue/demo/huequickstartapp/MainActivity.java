@@ -1,10 +1,12 @@
 package com.philips.lighting.hue.demo.huequickstartapp;
 
 import android.app.AlarmManager;
+import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.MediaPlayer;
@@ -74,6 +76,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button bridgeDiscoveryButton;
     private TextView alarmTimeTextView;
     private Button selectAlarmTimeButton;
+    private Uri alarmSound; //get the default alarm sound
+    private MediaPlayer mp; //make a media player of the alarm sound
+    private AlertDialog.Builder builder; //alert dialog for dismissing alarm
 
     enum UIState {
         Idle,
@@ -118,7 +123,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
+        //media player object to play the alarm sound on phone if selected
+        alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM); //get the default alarm sound
+        mp = MediaPlayer.create(getApplicationContext(), alarmSound); //make a media player of the alarm sound
+        //Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), alarmSound); //make a ringtone of the alarm sound
+
         registerReceiver(broadcastReceiver, new IntentFilter("ALARM_RECEIVED")); //Alarm Receiver
+
+        builder = new AlertDialog.Builder(this); //Alert Dialog for Alarm Dismissing
 
         // Connect to a bridge or start the bridge discovery
         String bridgeIp = getLastUsedBridgeIp();
@@ -385,13 +397,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     /**
-     * Turn ON all the lights of the bridge ****************** to be used when alarm goes off
+     * Turn ON all the lights of the bridge when alarm goes off
      */
     private void alarmHueLights() {
         BridgeState bridgeState = bridge.getBridgeState();
         List<LightPoint> lights = bridgeState.getLights();
 
-        int hueColour = 42337; //(0-65535)this will change based on which colour we want. 42337 is sunny
+        int hueColour = 0; //(0-65535)this will change based on which colour we want. 42337 is sunny. (test is red = 0)
         int hueBrightness = 254; //(0-254)this is the brightness
 
         for (final LightPoint light : lights) { // this loops through each connected light
@@ -420,11 +432,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     //to sound the phone's alarm
     private void alarmPhoneSound(){
-        Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM); //get the default alarm sound
-        //Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), alarmSound); //make a ringtone of the alarm sound
-        //r.play(); //play the alarm sound
-        MediaPlayer mp = MediaPlayer.create(getApplicationContext(), alarmSound); //make a media player of the alarm sound
         mp.start(); //play the alarm sound
+        //r.play(); //play the alarm sound
+    }
+
+    //to stop the sound on the phone's alarm
+    private void dismissAlarmSound(){
+        if (mp.isPlaying()) {
+            mp.pause(); //stop the sound from playing
+            mp.seekTo(0); //reset the media player to the start of the alarm
+        }
     }
 
     //to update the text showing alarm time
@@ -444,7 +461,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 1, intent, 0);
 
         // if the set time is before the current time, add 1 day to the time so the alarm is tomorrow
-        if (c.before(Calendar.getInstance())){
+        if (c.before(Calendar.getInstance())){ //comment this out when testing to get instant alarm***
             c.add(Calendar.DATE, 1);
         }
 
@@ -478,13 +495,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             //if phone alarm sound is selected to be used by the user****:
             alarmPhoneSound();//turn on the phone sound alarm
 
-            //Need to make pop up to dismiss alarm ****
-
-            //Toast message in case lights not working
-            CharSequence text = "Alarm is Working!";
-            int duration = Toast.LENGTH_LONG;
-            Toast toast = Toast.makeText(context, text, duration);
-            toast.show();
+            //Alert message pop up dialog to dismiss alarm ****
+            builder.setMessage(R.string.alarm)
+                    .setPositiveButton(R.string.dismiss, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // Dismiss Alarm
+                            dismissAlarmSound();
+                            //dismissWatchVibration();
+                        }
+                    })
+                    .setNegativeButton(R.string.snooze, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // Snooze Alarm *** to be implemented
+                        }
+                    });
+            AlertDialog alertdialog = builder.create();
+            alertdialog.show();
         }
     };
 
@@ -570,9 +596,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         break;
                     case Connected:
                         statusTextView.setVisibility(View.GONE);
-                        randomizeLightsButton.setVisibility(View.VISIBLE);
-                        toggleLightsButton.setVisibility(View.VISIBLE);
-                        bridgeDiscoveryButton.setVisibility(View.VISIBLE);
+                        //randomizeLightsButton.setVisibility(View.VISIBLE);
+                        //toggleLightsButton.setVisibility(View.VISIBLE);
                         alarmTimeTextView.setVisibility(View.VISIBLE);
                         selectAlarmTimeButton.setVisibility(View.VISIBLE);
                         cancelAlarmButton.setVisibility(View.VISIBLE);

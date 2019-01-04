@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Hue Testing - Jan 3 - Alarm FB</string>
+    <string name="app_name">Hue Testing - Jan 4 - Alarm FB</string>
     <string name="title_activity_bridge_discovery">BridgeDiscoveryActivity</string>
     <string name="random_lights">Randomize Lights</string>
     <string name="toggle_lights">Toggle Lights</string>
@@ -7,4 +7,7 @@
     <string name="alarm_time">No Alarm Set</string>
     <string name="select_alarm_time">Select Alarm Time</string>
     <string name="cancel_alarm">Cancel Alarm</string>
+    <string name="alarm">Alarm! - Time to Wakeup</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="snooze">Snooze</string>
 </resources>
