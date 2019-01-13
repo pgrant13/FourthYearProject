@@ -12,116 +12,43 @@
         android:padding="16dp"
         android:background="#ffffff">
 
-        <TextView
-            android:id="@+id/status_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAlignment="center"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:paddingBottom="8dp"
-            tools:text="Press the link button to authenticate."/>
-
-        <TextView
-            android:id="@+id/bridge_ip_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAlignment="center"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            tools:text=" Bridge IP:192.168.1.1:600026"
-            android:paddingBottom="16dp"/>
-
-        <ImageView
-            android:id="@+id/pushlink_image"
-            android:layout_width="match_parent"
-            android:layout_height="300dp"
-            android:contentDescription=""
-            android:scaleType="fitXY"
-            android:visibility="visible"
-            app:srcCompat="@drawable/pushlink_image" />
-
-        <ListView
-            android:id="@+id/bridge_discovery_result_list"
+        <!--to implement navigation between tabs - want to have even spacing along bottom-->
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="gone"/>
+            tools:context="com.philips.lighting.hue.demo.huequickstartapp.MainActivity"
+            android:padding="16dp"
+            android:background="#ffffff">
 
-        <Button
-            android:id="@+id/bridge_discovery_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/rerun_bridge_discovery" />
+            <TextView
+                android:id="@+id/alarms_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:textAlignment="center"
+                android:text="@string/alarms"/>
 
-        <Button
-            android:id="@+id/randomize_lights_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:text="@string/random_lights"
-            android:visibility="gone" />
+            <TextView
+                android:id="@+id/hue_setup_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:textAlignment="center"
+                android:text="@string/setup_hue"/>
 
-        <Button
-            android:id="@+id/toggle_lights_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:text="@string/toggle_lights"
-            android:visibility="gone" />
+            <TextView
+                android:id="@+id/sleep_tips_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="startSleepTips"
+                android:padding="16dp"
+                android:text="@string/sleep_tips"
+                android:textAlignment="center" />
 
-        <TextView
-            android:id="@+id/alarm_time_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="30sp"
-            android:textAlignment="center"
-            android:text="@string/alarm_time"
-            android:visibility="gone"/>
+        </LinearLayout>
 
-        <Button
-            android:id="@+id/select_alarm_time_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/select_alarm_time"
-            android:visibility="gone"/>
 
-        <Button
-            android:id="@+id/cancel_alarm_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:text="@string/cancel_alarm"
-            android:visibility="gone" />
-
-        <TextView
-            android:id="@+id/alarm_devices_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="20sp"
-            android:textAlignment="center"
-            android:text="@string/devices_in_alarm" />
-
-        <CheckBox
-            android:id="@+id/phone_sound_checkbox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/phone_sound"/>
-
-        <CheckBox
-            android:id="@+id/hue_lights_checkbox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/hue_lights"/>
-
-        <CheckBox
-            android:id="@+id/smart_plug_checkbox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/smart_plug"/>
-
-        <CheckBox
-            android:id="@+id/watch_vibration_checkbox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/watch_vibration"/>
 
     </LinearLayout>
 </ScrollView>

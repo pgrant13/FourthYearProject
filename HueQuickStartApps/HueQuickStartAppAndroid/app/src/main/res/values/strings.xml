@@ -1,9 +1,12 @@
 <resources>
-    <string name="app_name">Hue Testing - Jan 4 - Alarm FB</string>
+    <string name="app_name">Hue Testing - Jan 12 - Alarm FB</string>
     <string name="title_activity_bridge_discovery">BridgeDiscoveryActivity</string>
     <string name="random_lights">Randomize Lights</string>
     <string name="toggle_lights">Toggle Lights</string>
     <string name="rerun_bridge_discovery">Re-run bridge discovery</string>
+    <string name="alarms">Alarms</string>
+    <string name="setup_hue">Setup Hue</string>
+    <string name="sleep_tips">Sleep Tips</string>
     <string name="alarm_time">No Alarm Set</string>
     <string name="select_alarm_time">Select Alarm Time</string>
     <string name="cancel_alarm">Cancel Alarm</string>
@@ -15,4 +18,9 @@
     <string name="alarm">Alarm! - Time to Wakeup</string>
     <string name="dismiss">Dismiss</string>
     <string name="snooze">Snooze</string>
+    <string name="auth_smartplug">Authorize Smartplug</string>
+    <string name="url_smartplug">Get Smartplug URL</string>
+    <string name="on_smartplug">Turn ON Smartplug</string>
+    <string name="off_smartplug">Turn OFF Smartplug</string>
+    <string name="testing">Testing</string>
 </resources>

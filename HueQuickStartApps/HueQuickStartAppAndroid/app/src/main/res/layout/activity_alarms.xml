@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="com.philips.lighting.hue.demo.huequickstartapp.MainActivity"
+        android:padding="16dp"
+        android:background="#ffffff">
+
+        <TextView
+            android:id="@+id/alarm_time_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="30sp"
+            android:textAlignment="center"
+            android:text="@string/alarm_time"/>
+
+        <Button
+            android:id="@+id/select_alarm_time_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/select_alarm_time"/>
+
+        <Button
+            android:id="@+id/cancel_alarm_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="@string/cancel_alarm" />
+
+        <TextView
+            android:id="@+id/alarm_devices_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:textAlignment="center"
+            android:text="@string/devices_in_alarm" />
+
+        <CheckBox
+            android:id="@+id/phone_sound_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/phone_sound"/>
+
+        <CheckBox
+            android:id="@+id/hue_lights_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/hue_lights"/>
+
+        <CheckBox
+            android:id="@+id/smart_plug_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/smart_plug"/>
+
+        <CheckBox
+            android:id="@+id/watch_vibration_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/watch_vibration"/>
+
+    </LinearLayout>
+</ScrollView>
