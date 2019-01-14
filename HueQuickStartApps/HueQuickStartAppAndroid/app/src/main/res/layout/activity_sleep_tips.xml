@@ -20,29 +20,5 @@
             android:textAlignment="center"
             android:text="@string/testing"/>
 
-        <Button
-            android:id="@+id/auth_smartplug_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/auth_smartplug"/>
-
-        <Button
-            android:id="@+id/url_smartplug_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/url_smartplug"/>
-
-        <Button
-            android:id="@+id/on_smartplug_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/on_smartplug"/>
-
-        <Button
-            android:id="@+id/off_smartplug_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/off_smartplug"/>
-
     </LinearLayout>
 </ScrollView>

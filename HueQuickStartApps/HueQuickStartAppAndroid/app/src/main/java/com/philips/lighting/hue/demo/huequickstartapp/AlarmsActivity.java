@@ -1,12 +1,10 @@
 package com.philips.lighting.hue.demo.huequickstartapp;
 
 import android.app.AlarmManager;
-import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.MediaPlayer;
@@ -104,6 +102,11 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
     } //end of onCreate()
 
     @Override
+    protected void onStop() {
+        super.onStop();
+    } //end of onStop()
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(broadcastReceiver);
@@ -182,12 +185,12 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
         public void onReceive(Context context, Intent intent) {
             //if the Hue Lights are selected to be used by the user******:
             if (hueLightsCheckbox.isChecked()) {
-                alarmHueLights();//turn on the hue lights
+                turnOnHueLights();//turn on the hue lights
             }
 
             //if phone alarm sound is selected to be used by the user****:
             if (phoneSoundCheckbox.isChecked()) {
-                alarmPhoneSound();//turn on the phone sound alarm
+                turnOnPhoneSound();//turn on the phone sound alarm
             }
 
             //if smart plug is selected to be used by the user****:
@@ -197,7 +200,7 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
 
             //if watch vibration is selected to be used by the user****:
             /*if (watchVibrationCheckbox.isChecked()) {
-                alarmWatchVibration();//turn on the phone sound alarm
+                turnOnWatchVibration();//turn on the phone sound alarm
             }*/
         }
     };
@@ -207,8 +210,8 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
         @Override
         public void onReceive(Context context, Intent intent) {
             // Dismiss Alarm
-            dismissAlarmSound();
-            //dismissWatchVibration();
+            turnOffPhoneSound();
+            //turnOffWatchVibration();
             Log.i(TAG, "Received Dismiss Alarm Broadcast");
         }
     };
@@ -216,7 +219,7 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
     /**
      * Turn ON all the lights of the bridge when alarm goes off
      */
-    private void alarmHueLights() {
+    private void turnOnHueLights() {
         BridgeState bridgeState = bridge.getBridgeState();
         List<LightPoint> lights = bridgeState.getLights();
 
@@ -248,7 +251,7 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
     }
 
     //to sound the phone's alarm
-    private void alarmPhoneSound(){
+    private void turnOnPhoneSound(){
         Log.i(TAG, "turning on phone alarm sound");
         mp.start(); //play the alarm sound
         //r.play(); //play the alarm sound
@@ -273,13 +276,13 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
     }
 
     //to begin vibrations on the smart watch
-    private void alarmWatchVibration(){
+    private void turnOnWatchVibration(){
         Log.i(TAG, "turning on smartwatch vibration");
         //to implement
     }
 
     //to stop the sound on the phone's alarm
-    private void dismissAlarmSound(){
+    private void turnOffPhoneSound(){
         if (mp.isPlaying()) {
             mp.pause(); //stop the sound from playing
             mp.seekTo(0); //reset the media player to the start of the alarm
@@ -287,7 +290,7 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
     }
 
     //to stop the vibration on the watch
-    private void dismissWatchVibration(){
+    private void turnOffWatchVibration(){
         // to implement
     }
 
@@ -343,6 +346,5 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
         updateAlarmTimeText(c);
         startAlarm(c);
     }
-
 
 }

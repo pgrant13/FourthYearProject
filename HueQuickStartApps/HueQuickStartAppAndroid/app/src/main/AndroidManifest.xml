@@ -25,7 +25,8 @@
 
         <activity android:name=".SetupHueActivity" />
         <activity android:name=".SleepTipsActivity" />
-        <activity android:name=".AlarmsActivity"></activity>
+        <activity android:name=".AlarmsActivity" />
+        <activity android:name=".SetupTPLinkActivity"></activity>
     </application>
 
 </manifest>

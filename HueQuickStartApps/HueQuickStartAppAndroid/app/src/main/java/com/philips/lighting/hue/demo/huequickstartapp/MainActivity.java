@@ -24,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
     // UI elements
     private TextView alarmsTextView;
     private TextView hueSetupTextView;
+    private TextView tplinkSetupTextView;
     private TextView sleepTipsTextView;
     private AlertDialog.Builder builder; //alert dialog for dismissing alarm
 
@@ -54,6 +55,17 @@ public class MainActivity extends AppCompatActivity {
                 Intent setupHueIntent = new Intent(MainActivity.this, SetupHueActivity.class);
                 // Start the new activity
                 startActivity(setupHueIntent);
+            }
+        });
+        tplinkSetupTextView = (TextView)findViewById(R.id.tplink_setup_text);
+        tplinkSetupTextView.setOnClickListener(new View.OnClickListener() {
+            // The code in this method will be executed when the setup hue tab is clicked on.
+            @Override
+            public void onClick(View view) {
+                // Create a new intent to open the {@link SetupHueActivity}
+                Intent setupTPLinkIntent = new Intent(MainActivity.this, SetupTPLinkActivity.class);
+                // Start the new activity
+                startActivity(setupTPLinkIntent);
             }
         });
         sleepTipsTextView = (TextView)findViewById(R.id.sleep_tips_text);
