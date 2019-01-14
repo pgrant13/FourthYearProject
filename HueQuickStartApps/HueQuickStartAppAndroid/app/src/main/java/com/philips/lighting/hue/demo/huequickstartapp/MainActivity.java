@@ -107,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
     //to stop the alarm send broadcast to AlarmsActivity.java*******************************************************************************************************
     private void dismissAlarm(){
         Log.i(TAG, "Sent Dismiss Alarm Broadcast");
-        //sendBroadcast(new Intent("DISMISS_ALARM_RECEIVED"));
+        sendBroadcast(new Intent("DISMISS_ALARM_RECEIVED"));
         //Intent intent = new Intent(this, DismissAlarmReceiver.class);
 
         /*Calendar c = Calendar.getInstance();

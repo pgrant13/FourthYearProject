@@ -38,27 +38,31 @@ public class SleepTipsActivity extends AppCompatActivity implements View.OnClick
             //must get UUID before from https://www.uuidgenerator.net/version4 - already done on Paul's android
             String surl = "https://wap.tplinkcloud.com";
             String sdata = "{\"method\": \"login\", \"params\": {\"appType\": \"Kasa_Android\", \"cloudUserName\": \"paul.stephen.grant@gmail.com\", \"cloudPassword\": \"hockey13\", \"terminalUUID\": \"4dc0a122-aa41-449e-a464-f137fef2cf67\"}}";
-            //Curl.curl(surl, sdata);
-
-            //need to get returned token
+            Curl returnedCurl = new Curl();
+            returnedCurl.execute(surl, sdata);
+            //Log.i(TAG, "Returned Curl: "+returnedCurl);
+            //now parse string into token if want to allow user ability to setup smart plug //08d8afb2-A5zImSQZrdj2uWM5MnWooft 08d8afb2-A1876mDY6ETrqjG66WFrJwx
         }
         if (view == urlSmartplugButton) { //i already have url so i don't think this is necessary
             Log.i(TAG, "urlSmartplugButton was clicked");
-            String surl = "https://wap.tplinkcloud.com?token=08d8afb2-A62wJmPMOqaFzYY8vVgoR98 HTTP/1.1"; //use returned token here
+            String surl = "https://wap.tplinkcloud.com?token=08d8afb2-A1876mDY6ETrqjG66WFrJwx";  // removed HTTP/1.1 to work
             String sdata = "{\"method\":\"getDeviceList\"}";
-            //Curl.curl(surl, sdata);
+            Curl returnedCurl = new Curl();
+            returnedCurl.execute(surl, sdata);
         }
         if (view == onSmartplugButton) {
             Log.i(TAG, "onSmartplugButton was clicked");
-            String surl = "https://use1-wap.tplinkcloud.com/?token=08d8afb2-A62wJmPMOqaFzYY8vVgoR98 HTTP/1.1";
+            String surl = "https://use1-wap.tplinkcloud.com/?token=08d8afb2-A1876mDY6ETrqjG66WFrJwx"; //  removed HTTP/1.1 to work
             String sdata = "{\"method\":\"passthrough\", \"params\": {\"deviceId\": \"8006D533442D25A6A864522D93217C121A255439\", \"requestData\": \"{\\\"system\\\":{\\\"set_relay_state\\\":{\\\"state\\\":1}}}\" }}";
-            //Curl.curl(surl, sdata);
+            Curl returnedCurl = new Curl();
+            returnedCurl.execute(surl, sdata);
         }
         if (view == offSmartplugButton) {
             Log.i(TAG, "offSmartplugButton was clicked");
-            String surl = "https://use1-wap.tplinkcloud.com/?token=08d8afb2-A62wJmPMOqaFzYY8vVgoR98 HTTP/1.1";
+            String surl = "https://use1-wap.tplinkcloud.com/?token=08d8afb2-A1876mDY6ETrqjG66WFrJwx"; //  removed HTTP/1.1 to work
             String sdata = "{\"method\":\"passthrough\", \"params\": {\"deviceId\": \"8006D533442D25A6A864522D93217C121A255439\", \"requestData\": \"{\\\"system\\\":{\\\"set_relay_state\\\":{\\\"state\\\":0}}}\" }}";
-            // Curl.curl(surl, sdata);
+            Curl returnedCurl = new Curl();
+            returnedCurl.execute(surl, sdata);
         }
     }
 }

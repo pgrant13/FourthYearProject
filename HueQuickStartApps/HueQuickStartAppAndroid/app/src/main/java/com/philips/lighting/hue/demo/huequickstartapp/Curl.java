@@ -4,92 +4,57 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 
-// see https://developer.android.com/reference/java/net/HttpURLConnection
-public class Curl extends AsyncTask {
+public class Curl extends AsyncTask<String, Void, String> {
 
     private static final String TAG = "Curl Class";
 
     @Override
-    protected Object doInBackground(Object[] objects) {
-        return null;
-    }
-
-    public static void curl(String sURL, String sData) {
+    protected String doInBackground(String... strings) {
         //ie, url = "https://use1-wap.tplinkcloud.com/?token=08d8afb2-A62wJmPMOqaFzYY8vVgoR98 HTTP/1.1";
         //ie, data = "{"method":"passthrough", "params": {"deviceId": "8006D533442D25A6A864522D93217C121A255439", "requestData": "{\"system\":{\"set_relay_state\":{\"state\":1}}}" }}"
         //header is fixed as "Content-Type: application/json"
-        HttpURLConnection urlConnection = null;
-        StringBuilder sb = new StringBuilder();
+        String returnCurl = "no curl POST response";
 
         try {
-            URL url = new URL(sURL);
-            urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setDoOutput(true);
-            urlConnection.setRequestMethod("POST");
-            urlConnection.setRequestProperty("Content-Type", "application/json");
-            /*urlConnection.setUseCaches(false);
-            //urlConn.setRequestProperty("Host", "android.schoolportal.gr"); //idk what this would be for
-            urlConnection.setConnectTimeout(10000);
-            urlConnection.setReadTimeout(10000);*/
+            URL url = new URL(strings[0]); //url is the first string
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection(); //open connection to the url
+            StringBuilder sb = new StringBuilder();
 
-            Log.i(TAG, "Curl successfully connected");
+            conn.setRequestProperty("Content-Type", "application/json");
+            conn.setDoOutput(true);
+            conn.setRequestMethod("POST");
 
-            OutputStreamWriter out = new OutputStreamWriter(urlConnection.getOutputStream()); //this is causing problems********************
-            Log.i(TAG, "1: OutputStreamWriter Created");
-            out.write(sData);
+            //open the output stream and write the curl data to it
+            OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream());
+            out.write(strings[1]);
             out.close();
 
-            /*DataOutputStream printout = new DataOutputStream(urlConnection.getOutputStream ());
-            printout.writeBytes(URLEncoder.encode(sData,"UTF-8"));
-            Log.i(TAG, "Curl - 4");
-            printout.flush ();
-            printout.close ();
-
-            /*OutputStream out = new BufferedOutputStream(urlConnection.getOutputStream());
-            //writeStream(out);
-            Log.i(TAG, "Curl - 4");
-
-            /*OutputStreamWriter out = new OutputStreamWriter(urlConnection.getOutputStream());
-            Log.i(TAG, "Curl - 6");
-            out.write(data);
-            Log.i(TAG, "Curl - 7");
-            out.close();*/
-
-            Log.i(TAG, "2: Curl wrote");
-
-            int HttpResult = urlConnection.getResponseCode();
-            if (HttpResult == HttpURLConnection.HTTP_OK) {
-                Log.i(TAG, "3: Curl Reading");
-                BufferedReader br = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), "utf-8"));
+            //read the curl response
+            int HttpResult =conn.getResponseCode();
+            if(HttpResult ==HttpURLConnection.HTTP_OK){
+                BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
                 String line = null;
-                while ((line = br.readLine()) != null) {
+                while ((line = br.readLine()) != null) { //having trouble reading multiple lines...maybe the stream points to last line
                     sb.append(line + "\n");
                 }
                 br.close();
+                returnCurl = sb.toString();
+                Log.i(TAG, "read curl: "+returnCurl);
 
-                Log.i(TAG, "Good HTTP Connection, reader input: " + sb.toString());
-
-            } else {
-                Log.i(TAG, "HTTP not OK" + urlConnection.getResponseMessage());
+            }else{
+                Log.i(TAG, "http not okay: "+conn.getResponseMessage());
             }
-        } catch (MalformedURLException e) {
-            Log.i(TAG, "MalformedURLException");
+
+        } catch (Exception e) {
             e.printStackTrace();
-        } catch (IOException e) {
-            Log.i(TAG, "IOException");
-            e.printStackTrace();
-        } finally {
-            if (urlConnection != null)
-                urlConnection.disconnect();
         }
 
+        return null; //return the curl string returnCurl for parsing to retrieve token, url, device id
     }
 
 }

@@ -191,9 +191,9 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
             }
 
             //if smart plug is selected to be used by the user****:
-            /*if (smartPlugCheckbox.isChecked()) {
-                alarmSmartPlug();//turn on the phone sound alarm
-            }*/
+            if (smartPlugCheckbox.isChecked()) {
+                turnOnSmartPlug();//turn on the phone sound alarm
+            }
 
             //if watch vibration is selected to be used by the user****:
             /*if (watchVibrationCheckbox.isChecked()) {
@@ -249,17 +249,32 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
 
     //to sound the phone's alarm
     private void alarmPhoneSound(){
+        Log.i(TAG, "turning on phone alarm sound");
         mp.start(); //play the alarm sound
         //r.play(); //play the alarm sound
     }
 
     //to turn on the smart plug's power
-    private void alarmSmartPlug(){
-        //to implement
+    private void turnOnSmartPlug(){
+        Log.i(TAG, "turning on smartplug");
+        String surl = "https://use1-wap.tplinkcloud.com/?token=08d8afb2-A1876mDY6ETrqjG66WFrJwx";
+        String sdata = "{\"method\":\"passthrough\", \"params\": {\"deviceId\": \"8006D533442D25A6A864522D93217C121A255439\", \"requestData\": \"{\\\"system\\\":{\\\"set_relay_state\\\":{\\\"state\\\":1}}}\" }}";
+        Curl returnedCurl = new Curl();
+        returnedCurl.execute(surl, sdata);
+    }
+
+    //to turn on the smart plug's power
+    private void turnOffSmartPlug(){
+        Log.i(TAG, "turning off smartplug");
+        String surl = "https://use1-wap.tplinkcloud.com/?token=08d8afb2-A1876mDY6ETrqjG66WFrJwx";
+        String sdata = "{\"method\":\"passthrough\", \"params\": {\"deviceId\": \"8006D533442D25A6A864522D93217C121A255439\", \"requestData\": \"{\\\"system\\\":{\\\"set_relay_state\\\":{\\\"state\\\":0}}}\" }}";
+        Curl returnedCurl = new Curl();
+        returnedCurl.execute(surl, sdata);
     }
 
     //to begin vibrations on the smart watch
     private void alarmWatchVibration(){
+        Log.i(TAG, "turning on smartwatch vibration");
         //to implement
     }
 
