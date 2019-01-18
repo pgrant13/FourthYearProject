@@ -4,6 +4,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+/**
+ * This class receives the Pending Intent at the specified time by the user
+ * Upon receiving the intent, it will broadcast the alarm so other activity's can trigger the correct response to the alarm
+ */
 public class AlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) { //called when the alarm is triggered

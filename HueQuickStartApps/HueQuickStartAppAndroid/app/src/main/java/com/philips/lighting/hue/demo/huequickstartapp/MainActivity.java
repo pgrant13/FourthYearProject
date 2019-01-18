@@ -17,6 +17,11 @@ import android.widget.TextView;
 
 import java.util.Calendar;
 
+/**
+ * This is the Main Activity which is launched when the app is opened
+ * It will display the past sleep
+ * It will have buttons to enter the different activities
+ */
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "SleepTherapyApp";
@@ -93,7 +98,9 @@ public class MainActivity extends AppCompatActivity {
         unregisterReceiver(broadcastReceiver);
     }
 
-    // broadcastReceiver from the AlarmReceiver class. Used to make Alert
+    /**
+     * alarmReceiver from the AlarmReceiver class. Used to make Alert Dialog Box
+      */
     BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -108,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
                     })
                     .setNegativeButton(R.string.snooze, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
-                            // Snooze Alarm *** to be implemented
+                            // Snooze Alarm? *** to be implemented
                         }
                     });
             AlertDialog alertdialog = builder.create();
@@ -116,7 +123,9 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    //to stop the alarm send broadcast to AlarmsActivity.java*******************************************************************************************************
+    /**
+     * Todo: to stop the alarm sound, send broadcast to AlarmsActivity.java to kill the media player object**************************
+     */
     private void dismissAlarm(){
         Log.i(TAG, "Sent Dismiss Alarm Broadcast");
         sendBroadcast(new Intent("DISMISS_ALARM_RECEIVED"));

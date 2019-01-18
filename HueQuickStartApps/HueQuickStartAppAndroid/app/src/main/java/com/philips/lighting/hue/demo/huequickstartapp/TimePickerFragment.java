@@ -9,6 +9,9 @@ import android.text.format.DateFormat;
 
 import java.util.Calendar;
 
+/**
+ * A class to display the Time Picker for the alarm
+ */
 public class TimePickerFragment extends DialogFragment {
     @NonNull
     @Override

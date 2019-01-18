@@ -27,6 +27,7 @@ import com.philips.lighting.hue.sdk.wrapper.connection.BridgeResponseCallback;
 import com.philips.lighting.hue.sdk.wrapper.connection.BridgeStateUpdatedCallback;
 import com.philips.lighting.hue.sdk.wrapper.connection.BridgeStateUpdatedEvent;
 import com.philips.lighting.hue.sdk.wrapper.connection.ConnectionEvent;
+import com.philips.lighting.hue.sdk.wrapper.discovery.BridgeDiscovery;
 import com.philips.lighting.hue.sdk.wrapper.domain.Bridge;
 import com.philips.lighting.hue.sdk.wrapper.domain.BridgeBuilder;
 import com.philips.lighting.hue.sdk.wrapper.domain.BridgeState;
@@ -44,16 +45,17 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+/**
+ * This Activity is responsible for setting the app's alarm and registering the IoT devices
+ */
 public class AlarmsActivity extends AppCompatActivity implements TimePickerDialog.OnTimeSetListener{
 
     private static final String TAG = "AlarmsActivity";
 
+    // Hue Bridge
     private Bridge bridge;
 
     // UI elements
-    private TextView statusTextView;
-    private TextView bridgeIpTextView;
-
     private Button cancelAlarmButton;
     private TextView alarmTimeTextView;
     private Button selectAlarmTimeButton;
@@ -82,7 +84,7 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
         cancelAlarmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                cancelAlarm();//to implement function
+                cancelAlarm();// cancels the set alarm
             }
         });
 
@@ -91,13 +93,19 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
         mp = MediaPlayer.create(getApplicationContext(), alarmSound); //make a media player of the alarm sound
         //Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), alarmSound); //make a ringtone of the alarm sound
 
-        registerReceiver(broadcastReceiver, new IntentFilter("ALARM_RECEIVED")); //Alarm Receiver
+        registerReceiver(alarmReceiver, new IntentFilter("ALARM_RECEIVED")); //Alarm Receiver
         registerReceiver(dismissAlarmReceiver, new IntentFilter("DISMISS_ALARM_RECEIVED")); //Dismiss Alarm Receiver
 
         phoneSoundCheckbox = (CheckBox) findViewById(R.id.phone_sound_checkbox);
         hueLightsCheckbox = (CheckBox) findViewById(R.id.hue_lights_checkbox);
         smartPlugCheckbox = (CheckBox) findViewById(R.id.smart_plug_checkbox);
         watchVibrationCheckbox = (CheckBox) findViewById(R.id.watch_vibration_checkbox);
+
+        // Connect to the last used bridge
+        String bridgeIp = getLastUsedBridgeIp();
+        if (bridgeIp != null) {
+            connectToBridge(bridgeIp);
+        }
 
     } //end of onCreate()
 
@@ -109,11 +117,12 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unregisterReceiver(broadcastReceiver);
+        unregisterReceiver(alarmReceiver);
         unregisterReceiver(dismissAlarmReceiver);
     }
 
     //---------------------------------------------Hue Default Methods----------------------------------------------------------
+
 
     /**
      * Use the KnownBridges API to retrieve the last connected bridge
@@ -147,8 +156,6 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
                 .build();
 
         bridge.connect();
-
-        bridgeIpTextView.setText("Bridge IP: " + bridgeIp);
     }
 
     /**
@@ -158,6 +165,27 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
         @Override
         public void onConnectionEvent(BridgeConnection bridgeConnection, ConnectionEvent connectionEvent) {
             Log.i(TAG, "Connection event: " + connectionEvent);
+
+            switch (connectionEvent) {
+                case LINK_BUTTON_NOT_PRESSED:
+                    break;
+
+                case COULD_NOT_CONNECT:
+                    break;
+
+                case CONNECTION_LOST:
+                    break;
+
+                case CONNECTION_RESTORED:
+                    break;
+
+                case DISCONNECTED:
+                    // User-initiated disconnection.
+                    break;
+
+                default:
+                    break;
+            }
         }
 
         @Override
@@ -175,12 +203,28 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
         @Override
         public void onBridgeStateUpdated(Bridge bridge, BridgeStateUpdatedEvent bridgeStateUpdatedEvent) {
             Log.i(TAG, "Bridge state updated event: " + bridgeStateUpdatedEvent);
+
+            switch (bridgeStateUpdatedEvent) {
+                case INITIALIZED:
+                    // The bridge state was fully initialized for the first time.
+                    // It is now safe to perform operations on the bridge state.
+                    break;
+
+                case LIGHTS_AND_GROUPS:
+                    // At least one light was updated.
+                    break;
+
+                default:
+                    break;
+            }
         }
     };
     //--------------------------------------------End of Hue Default code-----------------------------------------------------------------
 
-    // broadcastReceiver from the AlarmReceiver class. Used to call the individual alarm functions
-    BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+    /**
+     * alarmReceiver from the AlarmReceiver class. Used to call the individual alarm functions
+     */
+    BroadcastReceiver alarmReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             //if the Hue Lights are selected to be used by the user******:
@@ -205,7 +249,9 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
         }
     };
 
-    // broadcastReceiver from the AlarmReceiver class. Used to call the individual alarm functions
+    /**
+     * dismissAlarmReceiver from the dismissAlarmReceiver class. Used to call the individual dismiss alarm functions
+     */
     BroadcastReceiver dismissAlarmReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -223,7 +269,7 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
         BridgeState bridgeState = bridge.getBridgeState();
         List<LightPoint> lights = bridgeState.getLights();
 
-        int hueColour = 0; //(0-65535)this will change based on which colour we want. 42337 is sunny. (test is red = 0)
+        int hueColour = 8337; //(0-65535)this will change based on which colour we want. 8337 is sunny. (test is red = 0)
         int hueBrightness = 254; //(0-254)this is the brightness
 
         for (final LightPoint light : lights) { // this loops through each connected light
@@ -250,14 +296,57 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
         }
     }
 
-    //to sound the phone's alarm
+    /**
+     * Turn OFF all the lights of the bridge
+     */
+    private void turnOffHueLights() {
+        BridgeState bridgeState = bridge.getBridgeState();
+        List<LightPoint> lights = bridgeState.getLights();
+
+        for (final LightPoint light : lights) { // this loops through each connected light
+            final LightState lightState = new LightState();
+
+            lightState.setOn(false);
+
+            light.updateState(lightState, BridgeConnectionType.LOCAL, new BridgeResponseCallback() {
+                @Override
+                public void handleCallback(Bridge bridge, ReturnCode returnCode, List<ClipResponse> list, List<HueError> errorList) {
+                    if (returnCode == ReturnCode.SUCCESS) {
+                        Log.i(TAG, "Turned OFF light of hue light " + light.getIdentifier());
+                    } else {
+                        Log.e(TAG, "Error turning ON hue light " + light.getIdentifier());
+                        for (HueError error : errorList) {
+                            Log.e(TAG, error.toString());
+                        }
+                    }
+                }
+            });
+
+        }
+    }
+
+    /**
+     * Turn ON the phone's alarm sound
+     */
     private void turnOnPhoneSound(){
         Log.i(TAG, "turning on phone alarm sound");
         mp.start(); //play the alarm sound
         //r.play(); //play the alarm sound
     }
 
-    //to turn on the smart plug's power
+    /**
+     * Turn OFF phone's alarm sound
+     */
+    private void turnOffPhoneSound(){
+        if (mp.isPlaying()) {
+            mp.pause(); //stop the sound from playing
+            mp.seekTo(0); //reset the media player to the start of the alarm
+        }
+    }
+
+    /**
+     * Turn ON the smartplug
+     */
     private void turnOnSmartPlug(){
         Log.i(TAG, "turning on smartplug");
         String surl = "https://use1-wap.tplinkcloud.com/?token=08d8afb2-A1876mDY6ETrqjG66WFrJwx";
@@ -266,7 +355,9 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
         returnedCurl.execute(surl, sdata);
     }
 
-    //to turn on the smart plug's power
+    /**
+     * Turn OFF the smartplug
+     */
     private void turnOffSmartPlug(){
         Log.i(TAG, "turning off smartplug");
         String surl = "https://use1-wap.tplinkcloud.com/?token=08d8afb2-A1876mDY6ETrqjG66WFrJwx";
@@ -275,26 +366,25 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
         returnedCurl.execute(surl, sdata);
     }
 
-    //to begin vibrations on the smart watch
+    /**
+     * Turn ON the smartwatch vibrations
+     */
     private void turnOnWatchVibration(){
         Log.i(TAG, "turning on smartwatch vibration");
         //to implement
     }
 
-    //to stop the sound on the phone's alarm
-    private void turnOffPhoneSound(){
-        if (mp.isPlaying()) {
-            mp.pause(); //stop the sound from playing
-            mp.seekTo(0); //reset the media player to the start of the alarm
-        }
-    }
-
-    //to stop the vibration on the watch
+    /**
+     * Turn OFF the smartwatch vibrations
+     */
     private void turnOffWatchVibration(){
         // to implement
     }
 
-    //to update the text showing alarm time
+    /**
+     * To update the text showing alarm time
+     * @param c Calendar object to update the set alarm text view
+     */
     private void updateAlarmTimeText(Calendar c){
         String timeText = "Alarm set for: ";
         //append the short date format (hour and minute) to the string
@@ -303,7 +393,10 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
         alarmTimeTextView.setText(timeText);
     }
 
-    //Start the alarm
+    /**
+     * Set an Alarm
+     * @param c Calendar object to set an alarm
+     */
     private void startAlarm(Calendar c){
         //create a pending intent which will trigger at the moment of the alarm
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
@@ -311,7 +404,7 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 1, intent, 0);
 
         // if the set time is before the current time, add 1 day to the time so the alarm is tomorrow
-        /*if (c.before(Calendar.getInstance())){ //comment this out when testing to get instant alarm***
+        /*if (c.before(Calendar.getInstance())){ //todo: comment this out when testing to get instant alarm***
             c.add(Calendar.DATE, 1);
         }*/
 
@@ -321,7 +414,9 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
         //alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
     }
 
-    //Cancel the alarm
+    /**
+     * Cancels the set alarm
+     */
     private void cancelAlarm(){
         //same as above for startAlarm()
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
@@ -333,9 +428,12 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
         alarmTimeTextView.setText("Alarm Canceled");
     }
 
-    // UI methods
-
-    //when the user selects the time of the alarm, we will display the alarm time and activate it
+    /**
+     * when the user selects the time of the alarm, we will display the alarm time and activate it
+     * @param timePicker
+     * @param hour
+     * @param minute
+     */
     @Override
     public void onTimeSet(TimePicker timePicker, int hour, int minute) {
         Calendar c = Calendar.getInstance();

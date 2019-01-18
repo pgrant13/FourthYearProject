@@ -1,8 +1,10 @@
 <resources>
-    <string name="app_name">Alarm Testing - Jan 14</string>
+    <string name="app_name">Alarm Testing - Jan 18</string>
     <string name="title_activity_bridge_discovery">BridgeDiscoveryActivity</string>
     <string name="random_lights">Randomize Lights</string>
     <string name="toggle_lights">Toggle Lights</string>
+    <string name="turn_on_hue">Turn On Lights</string>
+    <string name="turn_off_hue">Turn Off Lights</string>
     <string name="rerun_bridge_discovery">Re-run bridge discovery</string>
     <string name="alarms">Alarms</string>
     <string name="setup_hue">Setup Hue</string>

@@ -12,6 +12,9 @@ import com.philips.lighting.hue.sdk.wrapper.discovery.BridgeDiscoveryResult;
 
 import java.util.List;
 
+/**
+ * Class from Hue SDK
+ */
 class BridgeDiscoveryResultAdapter extends ArrayAdapter<BridgeDiscoveryResult> {
     BridgeDiscoveryResultAdapter(Context context, List<BridgeDiscoveryResult> results) {
         super(context, 0, results);

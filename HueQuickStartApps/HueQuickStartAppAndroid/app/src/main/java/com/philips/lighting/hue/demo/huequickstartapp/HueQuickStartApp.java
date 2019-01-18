@@ -5,6 +5,9 @@ import android.app.Application;
 import com.philips.lighting.hue.sdk.wrapper.HueLog;
 import com.philips.lighting.hue.sdk.wrapper.Persistence;
 
+/**
+ * This is some default Hue SDK that starts upon opening of application
+ */
 public class HueQuickStartApp extends Application {
 
     static {

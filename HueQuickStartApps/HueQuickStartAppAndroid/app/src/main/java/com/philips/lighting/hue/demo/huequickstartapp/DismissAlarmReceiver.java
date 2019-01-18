@@ -4,6 +4,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+/**
+ * This class may not be required. It will transmit the dismiss alarm broadcast to the desired classes
+ */
 public class DismissAlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) { //called when the alarm is dismissed

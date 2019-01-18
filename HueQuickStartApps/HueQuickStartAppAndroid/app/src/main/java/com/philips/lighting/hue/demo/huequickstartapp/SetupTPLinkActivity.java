@@ -6,7 +6,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
-public class SetupTPLinkActivity extends AppCompatActivity implements View.OnClickListener { //right now using this class to debug smart plug
+/**
+ * Activity to setup the TPLink smartplug
+ */
+public class SetupTPLinkActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = "SetupTPLinkActivity";
 
@@ -41,7 +44,7 @@ public class SetupTPLinkActivity extends AppCompatActivity implements View.OnCli
             Curl returnedCurl = new Curl();
             returnedCurl.execute(surl, sdata);
             //Log.i(TAG, "Returned Curl: "+returnedCurl);
-            //now parse string into token if want to allow user ability to setup smart plug //08d8afb2-A5zImSQZrdj2uWM5MnWooft 08d8afb2-A1876mDY6ETrqjG66WFrJwx
+            //todo: now parse string into token if want to allow user ability to setup smart plug //08d8afb2-A5zImSQZrdj2uWM5MnWooft 08d8afb2-A1876mDY6ETrqjG66WFrJwx
         }
         if (view == urlSmartplugButton) { //i already have url so i don't think this is necessary
             Log.i(TAG, "urlSmartplugButton was clicked");

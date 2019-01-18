@@ -13,6 +13,11 @@ public class Curl extends AsyncTask<String, Void, String> {
 
     private static final String TAG = "Curl Class";
 
+    /**
+     * Performs the Http curl (POST) request on a secondary thread
+     * @param strings array of Strings to be used in the Http request
+     * @return String containing the returned GET from the Http request
+     */
     @Override
     protected String doInBackground(String... strings) {
         //ie, url = "https://use1-wap.tplinkcloud.com/?token=08d8afb2-A62wJmPMOqaFzYY8vVgoR98 HTTP/1.1";

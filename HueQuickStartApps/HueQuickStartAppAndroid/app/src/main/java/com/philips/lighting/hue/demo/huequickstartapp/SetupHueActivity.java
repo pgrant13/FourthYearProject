@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.philips.lighting.hue.sdk.wrapper.connection.BridgeConnection;
 import com.philips.lighting.hue.sdk.wrapper.connection.BridgeConnectionCallback;
 import com.philips.lighting.hue.sdk.wrapper.connection.BridgeConnectionType;
+import com.philips.lighting.hue.sdk.wrapper.connection.BridgeResponseCallback;
 import com.philips.lighting.hue.sdk.wrapper.connection.BridgeStateUpdatedCallback;
 import com.philips.lighting.hue.sdk.wrapper.connection.BridgeStateUpdatedEvent;
 import com.philips.lighting.hue.sdk.wrapper.connection.ConnectionEvent;
@@ -21,8 +22,12 @@ import com.philips.lighting.hue.sdk.wrapper.discovery.BridgeDiscoveryCallback;
 import com.philips.lighting.hue.sdk.wrapper.discovery.BridgeDiscoveryResult;
 import com.philips.lighting.hue.sdk.wrapper.domain.Bridge;
 import com.philips.lighting.hue.sdk.wrapper.domain.BridgeBuilder;
+import com.philips.lighting.hue.sdk.wrapper.domain.BridgeState;
 import com.philips.lighting.hue.sdk.wrapper.domain.HueError;
 import com.philips.lighting.hue.sdk.wrapper.domain.ReturnCode;
+import com.philips.lighting.hue.sdk.wrapper.domain.clip.ClipResponse;
+import com.philips.lighting.hue.sdk.wrapper.domain.device.light.LightPoint;
+import com.philips.lighting.hue.sdk.wrapper.domain.device.light.LightState;
 import com.philips.lighting.hue.sdk.wrapper.knownbridges.KnownBridge;
 import com.philips.lighting.hue.sdk.wrapper.knownbridges.KnownBridges;
 
@@ -30,6 +35,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+/**
+ * Activity to setup the Hue Lights (mostly default from Hue SDK)
+ */
 public class SetupHueActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemClickListener{
 
     private static final String TAG = "SetupHueActivity";
@@ -43,6 +51,8 @@ public class SetupHueActivity extends AppCompatActivity implements View.OnClickL
     private TextView bridgeIpTextView;
     private View pushlinkImage;
     private Button bridgeDiscoveryButton;
+    private Button hueOnButton;
+    private Button hueOffButton;
 
     enum UIState {
         Idle,
@@ -66,6 +76,10 @@ public class SetupHueActivity extends AppCompatActivity implements View.OnClickL
         pushlinkImage = findViewById(R.id.pushlink_image);
         bridgeDiscoveryButton = (Button)findViewById(R.id.bridge_discovery_button);
         bridgeDiscoveryButton.setOnClickListener(this);
+        hueOnButton = (Button)findViewById(R.id.hue_on_button);
+        hueOnButton.setOnClickListener(this);
+        hueOffButton = (Button)findViewById(R.id.hue_off_button);
+        hueOffButton.setOnClickListener(this);
 
         // Connect to a bridge or start the bridge discovery
         String bridgeIp = getLastUsedBridgeIp();
@@ -245,7 +259,76 @@ public class SetupHueActivity extends AppCompatActivity implements View.OnClickL
         }
     };
 
-    //when the user clicks on the bridge they wish to connect to
+    /**
+     * Turn ON all the lights of the bridge
+     */
+    private void turnOnHueLights() {
+        BridgeState bridgeState = bridge.getBridgeState();
+        List<LightPoint> lights = bridgeState.getLights();
+
+        int hueColour = 8337; //(0-65535)this will change based on which colour we want. 8337 is perfect
+        int hueBrightness = 254; //(0-254)this is the brightness
+
+        for (final LightPoint light : lights) { // this loops through each connected light
+            final LightState lightState = new LightState();
+
+            lightState.setOn(true);
+            lightState.setHue(hueColour);
+            lightState.setBrightness(hueBrightness);
+
+            light.updateState(lightState, BridgeConnectionType.LOCAL, new BridgeResponseCallback() {
+                @Override
+                public void handleCallback(Bridge bridge, ReturnCode returnCode, List<ClipResponse> list, List<HueError> errorList) {
+                    if (returnCode == ReturnCode.SUCCESS) {
+                        Log.i(TAG, "Turned ON light of hue light " + light.getIdentifier());
+                    } else {
+                        Log.e(TAG, "Error turning ON hue light " + light.getIdentifier());
+                        for (HueError error : errorList) {
+                            Log.e(TAG, error.toString());
+                        }
+                    }
+                }
+            });
+
+        }
+    }
+
+    /**
+     * Turn OFF all the lights of the bridge
+     */
+    private void turnOffHueLights() {
+        BridgeState bridgeState = bridge.getBridgeState();
+        List<LightPoint> lights = bridgeState.getLights();
+
+        for (final LightPoint light : lights) { // this loops through each connected light
+            final LightState lightState = new LightState();
+
+            lightState.setOn(false);
+
+            light.updateState(lightState, BridgeConnectionType.LOCAL, new BridgeResponseCallback() {
+                @Override
+                public void handleCallback(Bridge bridge, ReturnCode returnCode, List<ClipResponse> list, List<HueError> errorList) {
+                    if (returnCode == ReturnCode.SUCCESS) {
+                        Log.i(TAG, "Turned OFF light of hue light " + light.getIdentifier());
+                    } else {
+                        Log.e(TAG, "Error turning ON hue light " + light.getIdentifier());
+                        for (HueError error : errorList) {
+                            Log.e(TAG, error.toString());
+                        }
+                    }
+                }
+            });
+
+        }
+    }
+
+    /**
+     * when the user clicks on the bridge they wish to connect to
+     * @param adapterView
+     * @param view
+     * @param i
+     * @param l
+     */
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         String bridgeIp = bridgeDiscoveryResults.get(i).getIP();
@@ -253,11 +336,20 @@ public class SetupHueActivity extends AppCompatActivity implements View.OnClickL
         connectToBridge(bridgeIp);
     }
 
-    //when the user clicks on one of the buttons
+    /**
+     * when the user clicks on one of the buttons
+     * @param view
+     */
     @Override
     public void onClick(View view) {
         if (view == bridgeDiscoveryButton) {
             startBridgeDiscovery();
+        }
+        if (view == hueOnButton) {
+            turnOnHueLights();
+        }
+        if (view == hueOffButton) {
+            turnOffHueLights();
         }
     }
 
@@ -272,6 +364,8 @@ public class SetupHueActivity extends AppCompatActivity implements View.OnClickL
                 bridgeIpTextView.setVisibility(View.GONE);
                 pushlinkImage.setVisibility(View.GONE);
                 bridgeDiscoveryButton.setVisibility(View.GONE);
+                hueOnButton.setVisibility(View.GONE);
+                hueOffButton.setVisibility(View.GONE);
 
                 switch (state) {
                     case Idle:
@@ -295,6 +389,8 @@ public class SetupHueActivity extends AppCompatActivity implements View.OnClickL
                     case Connected:
                         statusTextView.setVisibility(View.VISIBLE);
                         bridgeDiscoveryButton.setVisibility(View.VISIBLE);
+                        hueOnButton.setVisibility(View.VISIBLE);
+                        hueOffButton.setVisibility(View.VISIBLE);
                         break;
                 }
             }
