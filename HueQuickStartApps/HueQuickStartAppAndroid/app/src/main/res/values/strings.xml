@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Alarm Testing - Jan 18</string>
+    <string name="app_name">Sleep Therapy (Demo - Feb 1)</string>
     <string name="title_activity_bridge_discovery">BridgeDiscoveryActivity</string>
     <string name="random_lights">Randomize Lights</string>
     <string name="toggle_lights">Toggle Lights</string>
@@ -7,6 +7,7 @@
     <string name="turn_off_hue">Turn Off Lights</string>
     <string name="rerun_bridge_discovery">Re-run bridge discovery</string>
     <string name="alarms">Alarms</string>
+    <string name="history">History</string>
     <string name="setup_hue">Setup Hue</string>
     <string name="setup_tplink">Setup TPLink</string>
     <string name="sleep_tips">Sleep Tips</string>
@@ -25,5 +26,11 @@
     <string name="url_smartplug">Get Smartplug URL</string>
     <string name="on_smartplug">Turn ON Smartplug</string>
     <string name="off_smartplug">Turn OFF Smartplug</string>
+    <string name="sleep_tip_1">Set a schedule – go to bed and wake up at the same time each day</string>
+    <string name="sleep_tip_2">Exercise 20 to 30 minutes a day but no later than a few hours before going to bed</string>
+    <string name="sleep_tip_3">Avoid caffeine and nicotine late in the day and alcoholic drinks before bed</string>
+    <string name="sleep_tip_4">Relax before bed – try a warm bath, reading, or another relaxing routine</string>
+    <string name="sleep_tip_5">Create a room for sleep – avoid bright lights and loud sounds, keep the room at a comfortable temperature, and don’t watch TV or have a computer in your bedroom</string>
+    <string name="sleep_tip_6">Don’t lie in bed awake.  If you can’t get to sleep, do something else, like reading or listening to music, until you feel tired</string>
     <string name="testing">Testing</string>
 </resources>

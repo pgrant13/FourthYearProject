@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context="com.philips.lighting.hue.demo.huequickstartapp.MainActivity"
-        android:padding="10dp"
+        android:padding="0dp"
         android:background="#ffffff">
 
         <!--to implement navigation between tabs - want to have even spacing along bottom-->
@@ -25,15 +25,23 @@
                 android:id="@+id/alarms_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="10dp"
+                android:padding="@dimen/tab_margin"
                 android:textAlignment="center"
                 android:text="@string/alarms"/>
+
+            <TextView
+                android:id="@+id/history_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/tab_margin"
+                android:textAlignment="center"
+                android:text="@string/history"/>
 
             <TextView
                 android:id="@+id/hue_setup_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="10dp"
+                android:padding="@dimen/tab_margin"
                 android:textAlignment="center"
                 android:text="@string/setup_hue"/>
 
@@ -41,7 +49,7 @@
                 android:id="@+id/tplink_setup_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="10dp"
+                android:padding="@dimen/tab_margin"
                 android:textAlignment="center"
                 android:text="@string/setup_tplink"/>
 
@@ -50,7 +58,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:onClick="startSleepTips"
-                android:padding="10dp"
+                android:padding="@dimen/tab_margin"
                 android:text="@string/sleep_tips"
                 android:textAlignment="center" />
 
