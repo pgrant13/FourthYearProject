@@ -54,10 +54,16 @@
             android:text="@string/hue_lights"/>
 
         <CheckBox
-            android:id="@+id/smart_plug_checkbox"
+            android:id="@+id/smartplug1_checkbox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/smart_plug"/>
+            android:text="@string/smartplug1"/>
+
+        <CheckBox
+            android:id="@+id/smartplug2_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/smartplug2"/>
 
         <CheckBox
             android:id="@+id/watch_vibration_checkbox"

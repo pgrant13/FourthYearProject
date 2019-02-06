@@ -16,25 +16,39 @@
             android:id="@+id/auth_smartplug_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/auth_smartplug"/>
+            android:text="@string/auth_smartplug"
+            android:visibility="gone"/>
 
         <Button
             android:id="@+id/url_smartplug_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/url_smartplug"/>
+            android:text="@string/url_smartplug"
+            android:visibility="gone"/>
 
         <Button
-            android:id="@+id/on_smartplug_button"
+            android:id="@+id/on_smartplug1_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/on_smartplug"/>
+            android:text="@string/on_smartplug1"/>
 
         <Button
-            android:id="@+id/off_smartplug_button"
+            android:id="@+id/off_smartplug1_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/off_smartplug"/>
+            android:text="@string/off_smartplug1"/>
+
+        <Button
+            android:id="@+id/on_smartplug2_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/on_smartplug2"/>
+
+        <Button
+            android:id="@+id/off_smartplug2_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/off_smartplug2"/>
 
     </LinearLayout>
 </ScrollView>

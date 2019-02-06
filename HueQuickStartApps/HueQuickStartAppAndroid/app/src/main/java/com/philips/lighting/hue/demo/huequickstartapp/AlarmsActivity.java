@@ -63,8 +63,11 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
     private MediaPlayer mp; //make a media player of the alarm sound
     private CheckBox phoneSoundCheckbox;
     private CheckBox hueLightsCheckbox;
-    private CheckBox smartPlugCheckbox;
+    private CheckBox smartPlug1Checkbox;
+    private CheckBox smartPlug2Checkbox;
     private CheckBox watchVibrationCheckbox;
+    private String smartplug1 = "8006D533442D25A6A864522D93217C121A255439";
+    private String smartplug2 = "80069E32EB7ED682EA56429752DDE14A1A25686B";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,7 +101,8 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
 
         phoneSoundCheckbox = (CheckBox) findViewById(R.id.phone_sound_checkbox);
         hueLightsCheckbox = (CheckBox) findViewById(R.id.hue_lights_checkbox);
-        smartPlugCheckbox = (CheckBox) findViewById(R.id.smart_plug_checkbox);
+        smartPlug1Checkbox = (CheckBox) findViewById(R.id.smartplug1_checkbox);
+        smartPlug2Checkbox = (CheckBox) findViewById(R.id.smartplug2_checkbox);
         watchVibrationCheckbox = (CheckBox) findViewById(R.id.watch_vibration_checkbox);
 
         // Connect to the last used bridge
@@ -238,8 +242,13 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
             }
 
             //if smart plug is selected to be used by the user****:
-            if (smartPlugCheckbox.isChecked()) {
-                turnOnSmartPlug();//turn on the phone sound alarm
+            if (smartPlug1Checkbox.isChecked()) {
+                setSmartPlugState(smartplug1,"1");//turn on the smartplug1
+            }
+
+            //if smart plug is selected to be used by the user****:
+            if (smartPlug2Checkbox.isChecked()) {
+                setSmartPlugState(smartplug2,"1");//turn on the smartplug2
             }
 
             //if watch vibration is selected to be used by the user****:
@@ -257,7 +266,10 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
         public void onReceive(Context context, Intent intent) {
             // Dismiss Alarm
             turnOffPhoneSound();
+            setSmartPlugState(smartplug1,"0");//turn off the smartplug1
+            setSmartPlugState(smartplug2,"0");//turn off the smartplug2
             //turnOffWatchVibration();
+            setCheckboxEditable(true);//allow editing of the alarm checkboxes
             Log.i(TAG, "Received Dismiss Alarm Broadcast");
         }
     };
@@ -345,23 +357,14 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
     }
 
     /**
-     * Turn ON the smartplug
+     * Set the state of a smartplug
+     * @param deviceID the id of the device to control
+     * @param state the state to which you wish to set the selected device (0-OFF, 1-ON)
      */
-    private void turnOnSmartPlug(){
+    private void setSmartPlugState(String deviceID, String state){
         Log.i(TAG, "turning on smartplug");
         String surl = "https://use1-wap.tplinkcloud.com/?token=08d8afb2-A1876mDY6ETrqjG66WFrJwx";
-        String sdata = "{\"method\":\"passthrough\", \"params\": {\"deviceId\": \"8006D533442D25A6A864522D93217C121A255439\", \"requestData\": \"{\\\"system\\\":{\\\"set_relay_state\\\":{\\\"state\\\":1}}}\" }}";
-        Curl returnedCurl = new Curl();
-        returnedCurl.execute(surl, sdata);
-    }
-
-    /**
-     * Turn OFF the smartplug
-     */
-    private void turnOffSmartPlug(){
-        Log.i(TAG, "turning off smartplug");
-        String surl = "https://use1-wap.tplinkcloud.com/?token=08d8afb2-A1876mDY6ETrqjG66WFrJwx";
-        String sdata = "{\"method\":\"passthrough\", \"params\": {\"deviceId\": \"8006D533442D25A6A864522D93217C121A255439\", \"requestData\": \"{\\\"system\\\":{\\\"set_relay_state\\\":{\\\"state\\\":0}}}\" }}";
+        String sdata = "{\"method\":\"passthrough\", \"params\": {\"deviceId\": \""+deviceID+"\", \"requestData\": \"{\\\"system\\\":{\\\"set_relay_state\\\":{\\\"state\\\":"+state+"}}}\" }}";
         Curl returnedCurl = new Curl();
         returnedCurl.execute(surl, sdata);
     }
@@ -379,6 +382,17 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
      */
     private void turnOffWatchVibration(){
         // to implement
+    }
+
+    /**
+     * Set the state of the Checkboxes
+     * @param state of the editable checkbox (true - editable, false - non-editable)
+     */
+    private void setCheckboxEditable(boolean state){
+        phoneSoundCheckbox.setEnabled(state);
+        hueLightsCheckbox.setEnabled(state);
+        smartPlug1Checkbox.setEnabled(state);
+        smartPlug2Checkbox.setEnabled(state);
     }
 
     /**
@@ -412,6 +426,8 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pendingIntent);
         // use this if we want a repeating alarm daily
         //alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+
+        setCheckboxEditable(false); //lock editing of alarm checkboxes
     }
 
     /**
@@ -426,6 +442,8 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
         //cancel the pending intent for the alarm
         alarmManager.cancel(pendingIntent);
         alarmTimeTextView.setText("Alarm Canceled");
+
+        setCheckboxEditable(true); //allow for editing of alarm checkboxes
     }
 
     /**

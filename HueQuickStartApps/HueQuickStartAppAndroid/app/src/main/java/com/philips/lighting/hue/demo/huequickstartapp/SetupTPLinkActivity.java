@@ -10,13 +10,21 @@ import android.widget.Button;
  * Activity to setup the TPLink smartplug
  */
 public class SetupTPLinkActivity extends AppCompatActivity implements View.OnClickListener {
+    //token: 08d8afb2-A1876mDY6ETrqjG66WFrJwx
+    //smartplug1: 8006D533442D25A6A864522D93217C121A255439
+    //smartplug2: 80069E32EB7ED682EA56429752DDE14A1A25686B
 
     private static final String TAG = "SetupTPLinkActivity";
 
     private Button authSmartplugButton;
     private Button urlSmartplugButton;
-    private Button onSmartplugButton;
-    private Button offSmartplugButton;
+    private Button onSmartplug1Button;
+    private Button offSmartplug1Button;
+    private Button onSmartplug2Button;
+    private Button offSmartplug2Button;
+
+    private String smartplug1 = "8006D533442D25A6A864522D93217C121A255439";
+    private String smartplug2 = "80069E32EB7ED682EA56429752DDE14A1A25686B";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,10 +35,14 @@ public class SetupTPLinkActivity extends AppCompatActivity implements View.OnCli
         authSmartplugButton.setOnClickListener(this);
         urlSmartplugButton = (Button)findViewById(R.id.url_smartplug_button);
         urlSmartplugButton.setOnClickListener(this);
-        onSmartplugButton = (Button)findViewById(R.id.on_smartplug_button);
-        onSmartplugButton.setOnClickListener(this);
-        offSmartplugButton = (Button)findViewById(R.id.off_smartplug_button);
-        offSmartplugButton.setOnClickListener(this);
+        onSmartplug1Button = (Button)findViewById(R.id.on_smartplug1_button);
+        onSmartplug1Button.setOnClickListener(this);
+        offSmartplug1Button = (Button)findViewById(R.id.off_smartplug1_button);
+        offSmartplug1Button.setOnClickListener(this);
+        onSmartplug2Button = (Button)findViewById(R.id.on_smartplug2_button);
+        onSmartplug2Button.setOnClickListener(this);
+        offSmartplug2Button = (Button)findViewById(R.id.off_smartplug2_button);
+        offSmartplug2Button.setOnClickListener(this);
     } //end onCreate()
 
     //when the user clicks on one of the buttons
@@ -53,17 +65,31 @@ public class SetupTPLinkActivity extends AppCompatActivity implements View.OnCli
             Curl returnedCurl = new Curl();
             returnedCurl.execute(surl, sdata);
         }
-        if (view == onSmartplugButton) {
-            Log.i(TAG, "onSmartplugButton was clicked");
+        if (view == onSmartplug1Button) {
+            Log.i(TAG, "onSmartplug1Button was clicked");
             String surl = "https://use1-wap.tplinkcloud.com/?token=08d8afb2-A1876mDY6ETrqjG66WFrJwx"; //  removed HTTP/1.1 to work
             String sdata = "{\"method\":\"passthrough\", \"params\": {\"deviceId\": \"8006D533442D25A6A864522D93217C121A255439\", \"requestData\": \"{\\\"system\\\":{\\\"set_relay_state\\\":{\\\"state\\\":1}}}\" }}";
             Curl returnedCurl = new Curl();
             returnedCurl.execute(surl, sdata);
         }
-        if (view == offSmartplugButton) {
-            Log.i(TAG, "offSmartplugButton was clicked");
+        if (view == offSmartplug1Button) {
+            Log.i(TAG, "offSmartplug1Button was clicked");
             String surl = "https://use1-wap.tplinkcloud.com/?token=08d8afb2-A1876mDY6ETrqjG66WFrJwx"; //  removed HTTP/1.1 to work
             String sdata = "{\"method\":\"passthrough\", \"params\": {\"deviceId\": \"8006D533442D25A6A864522D93217C121A255439\", \"requestData\": \"{\\\"system\\\":{\\\"set_relay_state\\\":{\\\"state\\\":0}}}\" }}";
+            Curl returnedCurl = new Curl();
+            returnedCurl.execute(surl, sdata);
+        }
+        if (view == onSmartplug2Button) {
+            Log.i(TAG, "onSmartplug2Button was clicked");
+            String surl = "https://use1-wap.tplinkcloud.com/?token=08d8afb2-A1876mDY6ETrqjG66WFrJwx"; //  removed HTTP/1.1 to work
+            String sdata = "{\"method\":\"passthrough\", \"params\": {\"deviceId\": \"80069E32EB7ED682EA56429752DDE14A1A25686B\", \"requestData\": \"{\\\"system\\\":{\\\"set_relay_state\\\":{\\\"state\\\":1}}}\" }}";
+            Curl returnedCurl = new Curl();
+            returnedCurl.execute(surl, sdata);
+        }
+        if (view == offSmartplug2Button) {
+            Log.i(TAG, "offSmartplug2Button was clicked");
+            String surl = "https://use1-wap.tplinkcloud.com/?token=08d8afb2-A1876mDY6ETrqjG66WFrJwx"; //  removed HTTP/1.1 to work
+            String sdata = "{\"method\":\"passthrough\", \"params\": {\"deviceId\": \"80069E32EB7ED682EA56429752DDE14A1A25686B\", \"requestData\": \"{\\\"system\\\":{\\\"set_relay_state\\\":{\\\"state\\\":0}}}\" }}";
             Curl returnedCurl = new Curl();
             returnedCurl.execute(surl, sdata);
         }

@@ -125,6 +125,7 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Todo: to stop the alarm sound, send broadcast to AlarmsActivity.java to kill the media player object**************************
+     * problem is that the Activity dies/is garbage collected so can't kill the media player object. Need UI and Activity to persist
      */
     private void dismissAlarm(){
         Log.i(TAG, "Sent Dismiss Alarm Broadcast");
