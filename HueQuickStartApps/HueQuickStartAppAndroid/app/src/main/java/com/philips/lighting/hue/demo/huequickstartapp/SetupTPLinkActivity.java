@@ -56,7 +56,7 @@ public class SetupTPLinkActivity extends AppCompatActivity implements View.OnCli
             Curl returnedCurl = new Curl();
             returnedCurl.execute(surl, sdata);
             //Log.i(TAG, "Returned Curl: "+returnedCurl);
-            //todo: now parse string into token if want to allow user ability to setup smart plug //08d8afb2-A5zImSQZrdj2uWM5MnWooft 08d8afb2-A1876mDY6ETrqjG66WFrJwx
+            //todo: now parse string into token if want to allow user ability to setup smart plug, then input to arraylist/hashmap? //08d8afb2-A5zImSQZrdj2uWM5MnWooft 08d8afb2-A1876mDY6ETrqjG66WFrJwx
         }
         if (view == urlSmartplugButton) { //i already have url so i don't think this is necessary
             Log.i(TAG, "urlSmartplugButton was clicked");

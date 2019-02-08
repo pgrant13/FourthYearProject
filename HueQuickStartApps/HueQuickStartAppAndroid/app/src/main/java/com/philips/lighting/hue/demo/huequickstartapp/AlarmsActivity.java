@@ -14,6 +14,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import java.util.Timer;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -44,6 +45,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.TimerTask;
 
 /**
  * This Activity is responsible for setting the app's alarm and registering the IoT devices
@@ -69,11 +71,23 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
     private String smartplug1 = "8006D533442D25A6A864522D93217C121A255439";
     private String smartplug2 = "80069E32EB7ED682EA56429752DDE14A1A25686B";
     private int maxHueBrightness = 254;
+    private int mHueBrightness;
+    private int mFadeInTime;
+    private Timer timer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.i(TAG, "onCreate");
         setContentView(R.layout.activity_alarms);
+
+        /*// Check whether we're recreating a previously destroyed instance
+        if (savedInstanceState != null) {
+            // Restore value of members from saved state
+            alarmTimeTextView = (TextView) savedInstanceState.get("STATE_ALARM_TEXT_VIEW"); //test to restore state of alarm time view
+        } else {
+            // Probably initialize members with default values for a new instance
+        }*/
 
         alarmTimeTextView = (TextView)findViewById(R.id.alarm_time_text);
         selectAlarmTimeButton = (Button)findViewById(R.id.select_alarm_time_button);
@@ -115,17 +129,57 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
 
     } //end of onCreate()
 
+    /*@Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Log.i(TAG, "onSaveInstanceState");
+
+        // Save the user's current game state
+        //outState.putBundle("STATE_ALARM_TEXT_VIEW", outState); //test to save state of alarm time view
+    }*/
+
+    /*@Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) { //*this doesn't appear to be called
+        super.onRestoreInstanceState(savedInstanceState);
+        Log.i(TAG, "onRestoreInstanceState");
+
+        // Restore state members from saved instance
+        //alarmTimeTextView = savedInstanceState.getInt(STATE_ALARM_TEXT_VIEW); //test to restore state of alarm time view
+    }*/
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.i(TAG, "onStart");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.i(TAG, "onResume");
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.i(TAG, "onPause");
+    }
+
     @Override
     protected void onStop() {
         super.onStop();
-    } //end of onStop()
+        Log.i(TAG, "onStop");
+    }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        Log.i(TAG, "onDestroy");
         unregisterReceiver(alarmReceiver);
         unregisterReceiver(hueAlarmReceiver);
         unregisterReceiver(dismissAlarmReceiver);
+        //onSaveInstanceState();
     }
 
     //---------------------------------------------Hue Default Methods----------------------------------------------------------
@@ -245,15 +299,15 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
                 turnOnPhoneSound();//turn on the phone sound alarm
             }
 
-            //if smart plug is selected to be used by the user****:
-            if (smartPlug1Checkbox.isChecked()) {
+            /*//if smart plug is selected to be used by the user****:
+            if (smartPlug1Checkbox.isChecked()) { //used in hueAlarmReceiver broadcast receiver for warming
                 setSmartPlugState(smartplug1,"1");//turn on the smartplug1
             }
 
             //if smart plug is selected to be used by the user****:
-            if (smartPlug2Checkbox.isChecked()) {
+            if (smartPlug2Checkbox.isChecked()) { //used in hueAlarmReceiver broadcast receiver for humidifying
                 setSmartPlugState(smartplug2,"1");//turn on the smartplug2
-            }
+            }*/
 
             //if watch vibration is selected to be used by the user****:
             /*if (watchVibrationCheckbox.isChecked()) {
@@ -268,10 +322,24 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
     BroadcastReceiver hueAlarmReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            //if smart plug is selected to be used by the user****:
+            if (smartPlug1Checkbox.isChecked()) {
+                setSmartPlugState(smartplug1,"1");//turn on the smartplug1
+            }
+
+            //if smart plug is selected to be used by the user****:
+            if (smartPlug2Checkbox.isChecked()) {
+                setSmartPlugState(smartplug2,"1");//turn on the smartplug2
+            }
+
             //if the Hue Lights are selected to be used by the user******:
             if (hueLightsCheckbox.isChecked()) {
-                turnOnHueLights(8337,1);//turn on the hue lights to lowest brightness
-                //todo: now increment brightness by increment amount every x seconds
+                turnOnHueLights(8337,1);//turn on the hue lights to lowest brightness. //this works
+
+                //make a call to a method that will call incrementHueLightsBrightness every x seconds
+                timer = new Timer ();
+                // schedule the task to run starting now and then 1 second (1000 milliseconds*x seconds*x minutes)
+                timer.schedule (incrementBrightnessTask, 2000, 1000*1*1);   // delay and period are time in milliseconds
             }
         }
     };
@@ -293,44 +361,48 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
     };
 
     /**
-     * Increment Hue Brightness
-     * @param increment the amount to increment the Hue light brightness
+     * Task to increment Hue Brightness by 1 (Brightness from 0-254)
      */
-    private void incrementHueLightsBrightness(int increment) { //maybe return the brightness value to break out of an infinite loop?
-        if (increment>253) {
-            Log.e(TAG, "Invalid Hue state.");
-            return;
-        }
-        BridgeState bridgeState = bridge.getBridgeState();
-        List<LightPoint> lights = bridgeState.getLights();
+    TimerTask incrementBrightnessTask = new TimerTask () { //todo: move off main thread
+        @Override
+        public void run () {
+            BridgeState bridgeState = bridge.getBridgeState();
+            List<LightPoint> lights = bridgeState.getLights();
 
-        for (final LightPoint light : lights) { // this loops through each connected light
-            final LightState lightState = new LightState();
+            for (final LightPoint light : lights) { // this loops through each connected light
+                final LightState lightState = new LightState();
 
-            lightState.setOn(true);
-            lightState.setBrightnessIncrement(increment);
+                lightState.setOn(true);
+                lightState.setBrightnessIncrement(1);//increment by 1 level
 
-            light.updateState(lightState, BridgeConnectionType.LOCAL, new BridgeResponseCallback() {
-                @Override
-                public void handleCallback(Bridge bridge, ReturnCode returnCode, List<ClipResponse> list, List<HueError> errorList) {
-                    if (returnCode == ReturnCode.SUCCESS) {
-                        Log.i(TAG, "Turned ON light of hue light " + light.getIdentifier());
-                    } else {
-                        Log.e(TAG, "Error turning ON hue light " + light.getIdentifier());
-                        for (HueError error : errorList) {
-                            Log.e(TAG, error.toString());
+                light.updateState(lightState, BridgeConnectionType.LOCAL, new BridgeResponseCallback() {
+                    @Override
+                    public void handleCallback(Bridge bridge, ReturnCode returnCode, List<ClipResponse> list, List<HueError> errorList) {
+                        if (returnCode == ReturnCode.SUCCESS) {
+                            Log.i(TAG, "Turned ON light of hue light " + light.getIdentifier());
+                        } else {
+                            Log.e(TAG, "Error turning ON hue light " + light.getIdentifier());
+                            for (HueError error : errorList) {
+                                Log.e(TAG, error.toString());
+                            }
                         }
                     }
-                }
-            });
+                });
 
+                mHueBrightness=light.getLightState().getBrightness();
+                if (mHueBrightness>=maxHueBrightness){ //end the recurring increment brightness timertask when light is at brightest
+                    timer.cancel();
+                }
+                Log.i(TAG, "Brightness of hue light: " + mHueBrightness);
+
+            }
         }
-    }
+    };
 
     /**
      * Turn ON all the lights of the bridge when alarm goes off
-     * @param hueBrightness brightness to set the Hue light
-     * @param hueColour colour to set the Hue light
+     * @param hueBrightness brightness to set the Hue light (0-254)
+     * @param hueColour colour to set the Hue light. 8337 is sunny. (test is red = 0)
      */
     private void turnOnHueLights(int hueColour, int hueBrightness) {
         if (hueBrightness>maxHueBrightness||hueBrightness<0||hueColour>65535||hueColour<0) {
@@ -340,15 +412,13 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
         BridgeState bridgeState = bridge.getBridgeState();
         List<LightPoint> lights = bridgeState.getLights();
 
-        //int hueColour = 8337; //(0-65535)this will change based on which colour we want. 8337 is sunny. (test is red = 0)
-        //int hueBrightness = 254; //(0-254)this is the brightness
-
         for (final LightPoint light : lights) { // this loops through each connected light
             final LightState lightState = new LightState();
 
             lightState.setOn(true);
             lightState.setHue(hueColour);
             lightState.setBrightness(hueBrightness);
+            mHueBrightness=hueBrightness;
 
             light.updateState(lightState, BridgeConnectionType.LOCAL, new BridgeResponseCallback() {
                 @Override
@@ -363,7 +433,6 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
                     }
                 }
             });
-
         }
     }
 
@@ -480,7 +549,7 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 1, intent, 0);
 
         // if the set time is before the current time, add 1 day to the time so the alarm is tomorrow
-        /*if (c.before(Calendar.getInstance())){ //todo: comment this out when testing to get instant alarm***
+        /*if (c.before(Calendar.getInstance())){ //todo: (testing - to remove) comment this out when testing to get instant alarm***
             c.add(Calendar.DATE, 1);
         }*/
 
@@ -498,14 +567,15 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
      * Set the alarm for the Hue light
      * @param c Calendar object to set an alarm
      */
-    private void startAlarmHue(Calendar c){
+    private void startAlarmHue(Calendar c){ //this method works
         //todo: setup Hue to alarm (start brightening) by default ~5 minutes before. We will make this time selectable by the user
         //clone the selected alarm time and edit it to be 5 minutes earlier
         Calendar hueStart = (Calendar) c.clone();
         int alarmHour = c.get(Calendar.HOUR); //get the current set hour of the alarm
         int alarmMinute = c.get(Calendar.MINUTE); //get the current set minute of the alarm
-        //by default we will set the Hue light to alarm ~5 minutes before the alarm
-        int newAlarmMinute = alarmMinute-5; //subtract 5 minutes from the alarm
+        //by default we will set the Hue light to alarm ~(5-test, 30-default) minutes before the alarm
+        mFadeInTime=5; //to edit this to value selected by the user
+        int newAlarmMinute = alarmMinute-mFadeInTime; //subtract mFadeInTime from the alarm
         if(newAlarmMinute>=0) {
             hueStart.set(Calendar.MINUTE, newAlarmMinute);
         }
@@ -520,7 +590,7 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 1, intent, 0);
 
         // if the set time is before the current time, add 1 day to the time so the alarm is tomorrow
-        /*if (hueStart.before(Calendar.getInstance())){ //todo: (testing) comment this out when testing to get instant alarm***
+        /*if (hueStart.before(Calendar.getInstance())){ //todo: (testing - to remove) comment this out when testing to get instant alarm***
             hueStart.add(Calendar.DATE, 1);
         }*/
 
@@ -563,8 +633,8 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
         c.set(Calendar.SECOND, 0);
 
         updateAlarmTimeText(c); //display alarm time
-        startAlarm(c); //start the main alarm time
-        startAlarmHue(c); //todo: comment this out when we are testing alarm features asap
+        startAlarm(c); //start the main alarm time for sound
+        startAlarmHue(c); //start the early alarm time for light, temperature and humidity
     }
 
 }
