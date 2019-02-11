@@ -8,10 +8,10 @@ import android.content.Intent;
  * This class receives the Pending Intent at the specified time by the user
  * Upon receiving the intent, it will broadcast the alarm so other activity's can trigger the correct response to the alarm
  */
-public class AlarmReceiverHue extends BroadcastReceiver {
+public class AlarmReceiverFadeIn extends BroadcastReceiver {
     @Override
-    public void onReceive(Context context, Intent intent) { //called when the alarm is triggered
+    public void onReceive(Context context, Intent intent) { //called when the fade in alarm is triggered
         //here we want to send a broadcast back to the main activity to call the appropriate methods
-        context.sendBroadcast(new Intent("ALARM_RECEIVED_HUE"));
+        context.sendBroadcast(new Intent("ALARM_RECEIVED_FADE_IN"));
     }
 }

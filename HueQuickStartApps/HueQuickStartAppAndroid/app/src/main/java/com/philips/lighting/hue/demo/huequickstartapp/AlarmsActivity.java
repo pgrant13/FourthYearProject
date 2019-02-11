@@ -16,8 +16,10 @@ import android.os.Bundle;
 import android.util.Log;
 import java.util.Timer;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
@@ -28,7 +30,6 @@ import com.philips.lighting.hue.sdk.wrapper.connection.BridgeResponseCallback;
 import com.philips.lighting.hue.sdk.wrapper.connection.BridgeStateUpdatedCallback;
 import com.philips.lighting.hue.sdk.wrapper.connection.BridgeStateUpdatedEvent;
 import com.philips.lighting.hue.sdk.wrapper.connection.ConnectionEvent;
-import com.philips.lighting.hue.sdk.wrapper.discovery.BridgeDiscovery;
 import com.philips.lighting.hue.sdk.wrapper.domain.Bridge;
 import com.philips.lighting.hue.sdk.wrapper.domain.BridgeBuilder;
 import com.philips.lighting.hue.sdk.wrapper.domain.BridgeState;
@@ -68,6 +69,7 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
     private CheckBox smartPlug1Checkbox;
     private CheckBox smartPlug2Checkbox;
     private CheckBox watchVibrationCheckbox;
+    private Spinner alarmFadeInSpinner;
     private String smartplug1 = "8006D533442D25A6A864522D93217C121A255439";
     private String smartplug2 = "80069E32EB7ED682EA56429752DDE14A1A25686B";
     private int maxHueBrightness = 254;
@@ -111,15 +113,29 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
         mp = MediaPlayer.create(getApplicationContext(), alarmSound); //make a media player of the alarm sound
         //Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), alarmSound); //make a ringtone of the alarm sound
 
+        //initialize the alarm receivers
         registerReceiver(alarmReceiver, new IntentFilter("ALARM_RECEIVED")); //Alarm Receiver
-        registerReceiver(hueAlarmReceiver, new IntentFilter("ALARM_RECEIVED_HUE")); //Alarm Receiver
+        registerReceiver(fadeInAlarmReceiver, new IntentFilter("ALARM_RECEIVED_FADE_IN")); //Alarm Receiver
         registerReceiver(dismissAlarmReceiver, new IntentFilter("DISMISS_ALARM_RECEIVED")); //Dismiss Alarm Receiver
 
+        //initialize the checkboxes
         phoneSoundCheckbox = (CheckBox) findViewById(R.id.phone_sound_checkbox);
         hueLightsCheckbox = (CheckBox) findViewById(R.id.hue_lights_checkbox);
         smartPlug1Checkbox = (CheckBox) findViewById(R.id.smartplug1_checkbox);
         smartPlug2Checkbox = (CheckBox) findViewById(R.id.smartplug2_checkbox);
         watchVibrationCheckbox = (CheckBox) findViewById(R.id.watch_vibration_checkbox);
+
+        //initialize the alarm fade in spinner
+        alarmFadeInSpinner = (Spinner) findViewById(R.id.alarm_fade_in_spinner);
+
+        //***alarmFadeInSpinner.setOnItemSelectedListener(this);
+        // Create an ArrayAdapter using the alarm fade in times string array and a default spinner layout
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.alarm_fade_in_times, android.R.layout.simple_spinner_item);
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        alarmFadeInSpinner.setAdapter(adapter);
+        alarmFadeInSpinner.setSelection(3); //set the default to be element 3 (30 minutes)
 
         // Connect to the last used bridge
         String bridgeIp = getLastUsedBridgeIp();
@@ -177,7 +193,7 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
         super.onDestroy();
         Log.i(TAG, "onDestroy");
         unregisterReceiver(alarmReceiver);
-        unregisterReceiver(hueAlarmReceiver);
+        unregisterReceiver(fadeInAlarmReceiver);
         unregisterReceiver(dismissAlarmReceiver);
         //onSaveInstanceState();
     }
@@ -288,18 +304,25 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
     BroadcastReceiver alarmReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            //if the Hue Lights are selected to be used by the user******:
-            /*if (hueLightsCheckbox.isChecked()) { //used in hueAlarmReceiver broadcast receiver for dimming
-                turnOnHueLights(8337,254);//turn on the hue lights
-                //int hueBrightness = 254;
-            }*/
-
             //if phone alarm sound is selected to be used by the user****:
             if (phoneSoundCheckbox.isChecked()) {
                 turnOnPhoneSound();//turn on the phone sound alarm
             }
 
-            /*//if smart plug is selected to be used by the user****:
+            //if watch vibration is selected to be used by the user****:
+            /*if (watchVibrationCheckbox.isChecked()) {
+                turnOnWatchVibration();//turn on the phone sound alarm
+            }*/
+
+            /*These have been moved to the FadeIn Alarm
+
+            //if the Hue Lights are selected to be used by the user******:
+            if (hueLightsCheckbox.isChecked()) { //used in hueAlarmReceiver broadcast receiver for dimming
+                turnOnHueLights(8337,254);//turn on the hue lights
+                //int hueBrightness = 254;
+            }
+
+            //if smart plug is selected to be used by the user****:
             if (smartPlug1Checkbox.isChecked()) { //used in hueAlarmReceiver broadcast receiver for warming
                 setSmartPlugState(smartplug1,"1");//turn on the smartplug1
             }
@@ -308,18 +331,14 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
             if (smartPlug2Checkbox.isChecked()) { //used in hueAlarmReceiver broadcast receiver for humidifying
                 setSmartPlugState(smartplug2,"1");//turn on the smartplug2
             }*/
-
-            //if watch vibration is selected to be used by the user****:
-            /*if (watchVibrationCheckbox.isChecked()) {
-                turnOnWatchVibration();//turn on the phone sound alarm
-            }*/
+            Log.i(TAG, "Received Alarm Broadcast");
         }
     };
 
     /**
-     * hueAlarmReceiver from the AlarmReceiverHue class. Used to call the hue alarm functions
+     * fadeInAlarmReceiver from the AlarmReceiverFadeIn class. Used to call the fade in alarm functions
      */
-    BroadcastReceiver hueAlarmReceiver = new BroadcastReceiver() {
+    BroadcastReceiver fadeInAlarmReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             //if smart plug is selected to be used by the user****:
@@ -338,9 +357,10 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
 
                 //make a call to a method that will call incrementHueLightsBrightness every x seconds
                 timer = new Timer ();
-                // schedule the task to run starting now and then 1 second (1000 milliseconds*x seconds*x minutes)
-                timer.schedule (incrementBrightnessTask, 2000, 1000*1*1);   // delay and period are time in milliseconds
+                // schedule the task to run starting now and then every x seconds (x = 1000 milliseconds*60 seconds*FadeInTime minutes/252 levels of brightness)
+                timer.schedule (incrementBrightnessTask, 2000, 1000*60*mFadeInTime/252);   // delay and period are time in milliseconds
             }
+            Log.i(TAG, "Received Fade In Alarm Broadcast");
         }
     };
 
@@ -514,13 +534,14 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
 
     /**
      * Set the state of the Checkboxes
-     * @param state of the editable checkbox (true - editable, false - non-editable)
+     * @param state of the editable checkbox and spinner (true - editable, false - non-editable)
      */
     private void setCheckboxEditable(boolean state){
         phoneSoundCheckbox.setEnabled(state);
         hueLightsCheckbox.setEnabled(state);
         smartPlug1Checkbox.setEnabled(state);
         smartPlug2Checkbox.setEnabled(state);
+        alarmFadeInSpinner.setEnabled(state);
     }
 
     /**
@@ -567,14 +588,15 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
      * Set the alarm for the Hue light
      * @param c Calendar object to set an alarm
      */
-    private void startAlarmHue(Calendar c){ //this method works
-        //todo: setup Hue to alarm (start brightening) by default ~5 minutes before. We will make this time selectable by the user
+    private void startAlarmFadeIn(Calendar c){ //this method works
         //clone the selected alarm time and edit it to be 5 minutes earlier
         Calendar hueStart = (Calendar) c.clone();
         int alarmHour = c.get(Calendar.HOUR); //get the current set hour of the alarm
         int alarmMinute = c.get(Calendar.MINUTE); //get the current set minute of the alarm
         //by default we will set the Hue light to alarm ~(5-test, 30-default) minutes before the alarm
-        mFadeInTime=5; //to edit this to value selected by the user
+        String fadeInTime = alarmFadeInSpinner.getSelectedItem().toString();
+        Log.i(TAG, "Fade In Time in minutes is " + fadeInTime);
+        mFadeInTime = Integer.parseInt(fadeInTime);
         int newAlarmMinute = alarmMinute-mFadeInTime; //subtract mFadeInTime from the alarm
         if(newAlarmMinute>=0) {
             hueStart.set(Calendar.MINUTE, newAlarmMinute);
@@ -586,7 +608,7 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
 
         //create a pending intent which will trigger at the moment of the alarm
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(this, AlarmReceiverHue.class);
+        Intent intent = new Intent(this, AlarmReceiverFadeIn.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 1, intent, 0);
 
         // if the set time is before the current time, add 1 day to the time so the alarm is tomorrow
@@ -634,7 +656,7 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
 
         updateAlarmTimeText(c); //display alarm time
         startAlarm(c); //start the main alarm time for sound
-        startAlarmHue(c); //start the early alarm time for light, temperature and humidity
+        startAlarmFadeIn(c); //start the early alarm time for light, temperature and humidity
     }
 
 }

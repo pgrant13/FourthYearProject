@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Sleep Therapy (Demo - Feb 1)</string>
+    <string name="app_name">Sleep Therapy (Demo - Feb 11)</string>
     <string name="title_activity_bridge_discovery">BridgeDiscoveryActivity</string>
     <string name="random_lights">Randomize Lights</string>
     <string name="toggle_lights">Toggle Lights</string>
@@ -15,6 +15,7 @@
     <string name="select_alarm_time">Select Alarm Time</string>
     <string name="cancel_alarm">Cancel Alarm</string>
     <string name="devices_in_alarm">Devices to be used in the Alarm:</string>
+    <string name="fade_in">Fade in time (minutes): </string>
     <string name="phone_sound">Phone Sound</string>
     <string name="hue_lights">Hue Lights</string>
     <string name="smartplug1">Smart Plug 1 - Heat Dish</string>
@@ -36,4 +37,13 @@
     <string name="sleep_tip_5">Create a room for sleep – avoid bright lights and loud sounds, keep the room at a comfortable temperature, and don’t watch TV or have a computer in your bedroom</string>
     <string name="sleep_tip_6">Don’t lie in bed awake.  If you can’t get to sleep, do something else, like reading or listening to music, until you feel tired</string>
     <string name="testing">Testing</string>
+    <string-array name="alarm_fade_in_times">
+        <item>2</item>
+        <item>10</item>
+        <item>20</item>
+        <item>30</item>
+        <item>40</item>
+        <item>50</item>
+        <item>60</item>
+    </string-array>
 </resources>

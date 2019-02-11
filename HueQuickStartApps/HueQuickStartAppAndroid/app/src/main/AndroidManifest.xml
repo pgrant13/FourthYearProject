@@ -21,9 +21,8 @@
         </activity>
 
         <receiver android:name=".AlarmReceiver" />
-        <receiver android:name=".AlarmReceiverHue" />
+        <receiver android:name=".AlarmReceiverFadeIn" />
         <receiver android:name=".DismissAlarmReceiver" />
-
         <activity android:name=".SetupHueActivity" />
         <activity android:name=".SleepTipsActivity" />
         <activity android:name=".AlarmsActivity" />
