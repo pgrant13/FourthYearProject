@@ -10,9 +10,6 @@ import android.widget.Button;
  * Activity to setup the TPLink smartplug
  */
 public class SetupTPLinkActivity extends AppCompatActivity implements View.OnClickListener {
-    //token: 08d8afb2-A1876mDY6ETrqjG66WFrJwx
-    //smartplug1: 8006D533442D25A6A864522D93217C121A255439
-    //smartplug2: 80069E32EB7ED682EA56429752DDE14A1A25686B
 
     private static final String TAG = "SetupTPLinkActivity";
 
@@ -25,6 +22,7 @@ public class SetupTPLinkActivity extends AppCompatActivity implements View.OnCli
 
     private String smartplug1 = "8006D533442D25A6A864522D93217C121A255439";
     private String smartplug2 = "80069E32EB7ED682EA56429752DDE14A1A25686B";
+    private String token = "08d8afb2-A2uQ3KFUINONnJLGpGKBwk5";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,35 +58,35 @@ public class SetupTPLinkActivity extends AppCompatActivity implements View.OnCli
         }
         if (view == urlSmartplugButton) { //i already have url so i don't think this is necessary
             Log.i(TAG, "urlSmartplugButton was clicked");
-            String surl = "https://wap.tplinkcloud.com?token=08d8afb2-A1876mDY6ETrqjG66WFrJwx";  // removed HTTP/1.1 to work
+            String surl = "https://wap.tplinkcloud.com?token=08d8afb2-A2uQ3KFUINONnJLGpGKBwk5";  // removed HTTP/1.1 to work
             String sdata = "{\"method\":\"getDeviceList\"}";
             Curl returnedCurl = new Curl();
             returnedCurl.execute(surl, sdata);
         }
         if (view == onSmartplug1Button) {
             Log.i(TAG, "onSmartplug1Button was clicked");
-            String surl = "https://use1-wap.tplinkcloud.com/?token=08d8afb2-A1876mDY6ETrqjG66WFrJwx"; //  removed HTTP/1.1 to work
+            String surl = "https://use1-wap.tplinkcloud.com/?token="+token+""; //  removed HTTP/1.1 to work
             String sdata = "{\"method\":\"passthrough\", \"params\": {\"deviceId\": \"8006D533442D25A6A864522D93217C121A255439\", \"requestData\": \"{\\\"system\\\":{\\\"set_relay_state\\\":{\\\"state\\\":1}}}\" }}";
             Curl returnedCurl = new Curl();
             returnedCurl.execute(surl, sdata);
         }
         if (view == offSmartplug1Button) {
             Log.i(TAG, "offSmartplug1Button was clicked");
-            String surl = "https://use1-wap.tplinkcloud.com/?token=08d8afb2-A1876mDY6ETrqjG66WFrJwx"; //  removed HTTP/1.1 to work
+            String surl = "https://use1-wap.tplinkcloud.com/?token="+token+""; //  removed HTTP/1.1 to work
             String sdata = "{\"method\":\"passthrough\", \"params\": {\"deviceId\": \"8006D533442D25A6A864522D93217C121A255439\", \"requestData\": \"{\\\"system\\\":{\\\"set_relay_state\\\":{\\\"state\\\":0}}}\" }}";
             Curl returnedCurl = new Curl();
             returnedCurl.execute(surl, sdata);
         }
         if (view == onSmartplug2Button) {
             Log.i(TAG, "onSmartplug2Button was clicked");
-            String surl = "https://use1-wap.tplinkcloud.com/?token=08d8afb2-A1876mDY6ETrqjG66WFrJwx"; //  removed HTTP/1.1 to work
+            String surl = "https://use1-wap.tplinkcloud.com/?token="+token+""; //  removed HTTP/1.1 to work
             String sdata = "{\"method\":\"passthrough\", \"params\": {\"deviceId\": \"80069E32EB7ED682EA56429752DDE14A1A25686B\", \"requestData\": \"{\\\"system\\\":{\\\"set_relay_state\\\":{\\\"state\\\":1}}}\" }}";
             Curl returnedCurl = new Curl();
             returnedCurl.execute(surl, sdata);
         }
         if (view == offSmartplug2Button) {
             Log.i(TAG, "offSmartplug2Button was clicked");
-            String surl = "https://use1-wap.tplinkcloud.com/?token=08d8afb2-A1876mDY6ETrqjG66WFrJwx"; //  removed HTTP/1.1 to work
+            String surl = "https://use1-wap.tplinkcloud.com/?token="+token+""; //  removed HTTP/1.1 to work
             String sdata = "{\"method\":\"passthrough\", \"params\": {\"deviceId\": \"80069E32EB7ED682EA56429752DDE14A1A25686B\", \"requestData\": \"{\\\"system\\\":{\\\"set_relay_state\\\":{\\\"state\\\":0}}}\" }}";
             Curl returnedCurl = new Curl();
             returnedCurl.execute(surl, sdata);

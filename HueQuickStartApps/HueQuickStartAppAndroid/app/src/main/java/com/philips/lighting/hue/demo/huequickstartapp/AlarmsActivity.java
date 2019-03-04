@@ -511,7 +511,7 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
      */
     private void setSmartPlugState(String deviceID, String state){
         Log.i(TAG, "turning on smartplug");
-        String surl = "https://use1-wap.tplinkcloud.com/?token=08d8afb2-A1876mDY6ETrqjG66WFrJwx";
+        String surl = "https://use1-wap.tplinkcloud.com/?token=08d8afb2-A2uQ3KFUINONnJLGpGKBwk5";
         String sdata = "{\"method\":\"passthrough\", \"params\": {\"deviceId\": \""+deviceID+"\", \"requestData\": \"{\\\"system\\\":{\\\"set_relay_state\\\":{\\\"state\\\":"+state+"}}}\" }}";
         Curl returnedCurl = new Curl();
         returnedCurl.execute(surl, sdata);
