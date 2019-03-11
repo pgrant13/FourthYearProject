@@ -32,6 +32,9 @@
         <activity android:name=".SetupTPLinkActivity"
             android:parentActivityName=".MainActivity">
         </activity>
+        <activity android:name=".HistoryActivity"
+            android:parentActivityName=".MainActivity">
+        </activity>
     </application>
 
 </manifest>
