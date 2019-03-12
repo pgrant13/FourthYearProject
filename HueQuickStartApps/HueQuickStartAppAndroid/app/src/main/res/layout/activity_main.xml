@@ -1,70 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
-    <LinearLayout
-        android:orientation="vertical"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context="com.philips.lighting.hue.demo.huequickstartapp.MainActivity"
-        android:padding="0dp"
-        android:background="#ffffff">
+        android:background="#ffffff"
+        tools:context="com.philips.lighting.hue.demo.huequickstartapp.MainActivity">
+
+        <ImageView
+            android:id="@+id/sleep_stages_image"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:scaleType="fitXY"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/linearLayout1"
+            app:srcCompat="@drawable/sleep_stage_example" />
 
         <!--to implement navigation between tabs - want to have even spacing along bottom-->
         <LinearLayout
+            android:id="@+id/linearLayout1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="0dp"
+            android:background="#ffffff"
             android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:context="com.philips.lighting.hue.demo.huequickstartapp.MainActivity"
             android:padding="10dp"
-            android:background="#ffffff">
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:context="com.philips.lighting.hue.demo.huequickstartapp.MainActivity">
 
             <TextView
                 android:id="@+id/alarms_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="@dimen/tab_margin"
-                android:textAlignment="center"
-                android:text="@string/alarms"/>
+                android:layout_weight="1"
+                android:text="@string/alarms"
+                android:textAlignment="center" />
 
             <TextView
                 android:id="@+id/history_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="@dimen/tab_margin"
-                android:textAlignment="center"
-                android:text="@string/history"/>
+                android:layout_weight="1"
+                android:text="@string/history"
+                android:textAlignment="center" />
 
             <TextView
                 android:id="@+id/hue_setup_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="@dimen/tab_margin"
-                android:textAlignment="center"
-                android:text="@string/setup_hue"/>
+                android:layout_weight="1"
+                android:text="@string/setup_hue"
+                android:textAlignment="center" />
 
             <TextView
                 android:id="@+id/tplink_setup_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="@dimen/tab_margin"
-                android:textAlignment="center"
-                android:text="@string/setup_tplink"/>
+                android:layout_weight="1"
+                android:text="@string/setup_tplink"
+                android:textAlignment="center" />
 
             <TextView
                 android:id="@+id/sleep_tips_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:onClick="startSleepTips"
                 android:padding="@dimen/tab_margin"
+                android:layout_weight="1"
                 android:text="@string/sleep_tips"
                 android:textAlignment="center" />
-
         </LinearLayout>
-
-
-
-    </LinearLayout>
-</ScrollView>
+</android.support.constraint.ConstraintLayout>
