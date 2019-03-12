@@ -31,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView hueSetupTextView;
     private TextView tplinkSetupTextView;
     private TextView sleepTipsTextView;
+    private TextView historyTextView;
     private AlertDialog.Builder builder; //alert dialog for dismissing alarm
 
     @Override
@@ -84,6 +85,19 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(sleepTipsIntent);
             }
         });
+        historyTextView = (TextView)findViewById(R.id.history_text);
+        historyTextView.setOnClickListener(new View.OnClickListener(){
+            //The code in this method will be executed when the history tab is clicked on.
+            @Override
+            public void onClick(View view) {
+                //Create a new intent to open the {@link HistoryActivity}
+                Intent historyIntent = new Intent(MainActivity.this, HistoryActivity.class);
+                // Start the new activity
+                startActivity(historyIntent);
+            }
+
+        });
+
 
         registerReceiver(broadcastReceiver, new IntentFilter("ALARM_RECEIVED")); //Alarm Receiver
         builder = new AlertDialog.Builder(this); //Alert Dialog for Alarm Dismissing
