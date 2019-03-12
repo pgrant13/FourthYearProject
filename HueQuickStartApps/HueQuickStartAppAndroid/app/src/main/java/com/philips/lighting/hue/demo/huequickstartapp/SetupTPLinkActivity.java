@@ -108,32 +108,33 @@ public class SetupTPLinkActivity extends AppCompatActivity implements View.OnCli
         }
         if (view == onSmartplug1Button) {
             Log.i(TAG, "onSmartplug1Button was clicked");
-            String surl = "https://use1-wap.tplinkcloud.com/?token="+token+""; //  removed HTTP/1.1 to work
-            String sdata = "{\"method\":\"passthrough\", \"params\": {\"deviceId\": \"8006D533442D25A6A864522D93217C121A255439\", \"requestData\": \"{\\\"system\\\":{\\\"set_relay_state\\\":{\\\"state\\\":1}}}\" }}";
-            Curl returnedCurl = new Curl();
-            returnedCurl.execute(surl, sdata);
+            setSmartPlugState(smartplug1,"1");
         }
         if (view == offSmartplug1Button) {
             Log.i(TAG, "offSmartplug1Button was clicked");
-            String surl = "https://use1-wap.tplinkcloud.com/?token="+token+""; //  removed HTTP/1.1 to work
-            String sdata = "{\"method\":\"passthrough\", \"params\": {\"deviceId\": \"8006D533442D25A6A864522D93217C121A255439\", \"requestData\": \"{\\\"system\\\":{\\\"set_relay_state\\\":{\\\"state\\\":0}}}\" }}";
-            Curl returnedCurl = new Curl();
-            returnedCurl.execute(surl, sdata);
+            setSmartPlugState(smartplug1,"0");
         }
         if (view == onSmartplug2Button) {
             Log.i(TAG, "onSmartplug2Button was clicked");
-            String surl = "https://use1-wap.tplinkcloud.com/?token="+token+""; //  removed HTTP/1.1 to work
-            String sdata = "{\"method\":\"passthrough\", \"params\": {\"deviceId\": \"80069E32EB7ED682EA56429752DDE14A1A25686B\", \"requestData\": \"{\\\"system\\\":{\\\"set_relay_state\\\":{\\\"state\\\":1}}}\" }}";
-            Curl returnedCurl = new Curl();
-            returnedCurl.execute(surl, sdata);
+            setSmartPlugState(smartplug2,"1");
         }
         if (view == offSmartplug2Button) {
             Log.i(TAG, "offSmartplug2Button was clicked");
-            String surl = "https://use1-wap.tplinkcloud.com/?token="+token+""; //  removed HTTP/1.1 to work
-            String sdata = "{\"method\":\"passthrough\", \"params\": {\"deviceId\": \"80069E32EB7ED682EA56429752DDE14A1A25686B\", \"requestData\": \"{\\\"system\\\":{\\\"set_relay_state\\\":{\\\"state\\\":0}}}\" }}";
-            Curl returnedCurl = new Curl();
-            returnedCurl.execute(surl, sdata);
+            setSmartPlugState(smartplug2,"0");
         }
+    }
+
+    /**
+     * Set the state of a smartplug
+     * @param deviceID the id of the device to control
+     * @param state the state to which you wish to set the selected device (0-OFF, 1-ON)
+     */
+    private void setSmartPlugState(String deviceID, String state){
+        Log.i(TAG, "turning on smartplug");
+        String surl = "https://use1-wap.tplinkcloud.com/?token=08d8afb2-A2uQ3KFUINONnJLGpGKBwk5";
+        String sdata = "{\"method\":\"passthrough\", \"params\": {\"deviceId\": \""+deviceID+"\", \"requestData\": \"{\\\"system\\\":{\\\"set_relay_state\\\":{\\\"state\\\":"+state+"}}}\" }}";
+        Curl returnedCurl = new Curl();
+        returnedCurl.execute(surl, sdata);
     }
 
     //start of imported code from bluetooth heat and humidity sensor
@@ -287,8 +288,20 @@ public class SetupTPLinkActivity extends AppCompatActivity implements View.OnCli
                                     textView.append(String.valueOf(temp3));
                                     textView.append (" Humidity = ");
                                     textView.append(String.valueOf(humid3));
+                                    //todo this is where we will call the turnOffSmartPlugFunction for Humidifier
+                                    if (temp3>25){
+                                        textView.append ("Temperature Above 25C, turning OFF Heat");
+                                        setSmartPlugState(smartplug1,"0"); //turn Off smartplug
+                                    }else if (humid3<20){
+                                        textView.append ("Temperature Below 20C, turning ON Heat");
+                                        setSmartPlugState(smartplug1,"1"); //turn Off smartplug
+                                    }
                                     if (humid3>50){
-                                        textView.append (" Too High!");
+                                        textView.append ("Humidity Above 50%, turning OFF Humidifier");
+                                        setSmartPlugState(smartplug2,"0"); //turn Off smartplug
+                                    }else if (humid3<30){
+                                        textView.append ("Humidity Below 30%, turning ON Humidifier");
+                                        setSmartPlugState(smartplug2,"1"); //turn Off smartplug
                                     }
                                     textView.append ("\n");
                                 }
