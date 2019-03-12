@@ -353,7 +353,7 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
 
             //if the Hue Lights are selected to be used by the user******:
             if (hueLightsCheckbox.isChecked()) {
-                turnOnHueLights(8337,1);//turn on the hue lights to lowest brightness. //this works
+                turnOnHueLights(8337,1);//turn on the hue lights to lowest brightness
 
                 //make a call to a method that will call incrementHueLightsBrightness every x seconds
                 timer = new Timer ();
@@ -585,7 +585,7 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
     }
 
     /**
-     * Set the alarm for the Hue light
+     * Set the alarm for the fade in devices
      * @param c Calendar object to set an alarm
      */
     private void startAlarmFadeIn(Calendar c){ //this method works
