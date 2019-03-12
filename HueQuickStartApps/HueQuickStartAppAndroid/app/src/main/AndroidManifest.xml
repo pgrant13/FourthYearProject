@@ -3,6 +3,7 @@
     package="com.philips.lighting.hue.demo.huequickstartapp">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
 
     <application
         android:name=".HueQuickStartApp"
