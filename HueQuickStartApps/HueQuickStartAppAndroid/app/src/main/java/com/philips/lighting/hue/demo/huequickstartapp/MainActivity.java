@@ -120,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             Log.i(TAG, "Received Alarm Broadcast");
 
-            //Alert message pop up dialog to dismiss alarm ****
+            /*//Alert message pop up dialog to dismiss alarm ****
             builder.setMessage(R.string.alarm)
                     .setPositiveButton(R.string.dismiss, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
@@ -133,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     });
             AlertDialog alertdialog = builder.create();
-            alertdialog.show();
+            alertdialog.show();*/
         }
     };
 
@@ -141,17 +141,17 @@ public class MainActivity extends AppCompatActivity {
      * Todo: to stop the alarm sound, send broadcast to AlarmsActivity.java to kill the media player object. Maybe have dismiss notification on all alarm activities??
      * problem is that the Activity dies/is garbage collected so can't kill the media player object. Need UI and Activity to persist
      */
-    private void dismissAlarm(){
+    /*private void dismissAlarm(){
         Log.i(TAG, "Sent Dismiss Alarm Broadcast");
         sendBroadcast(new Intent("DISMISS_ALARM_RECEIVED"));
         //Intent intent = new Intent(this, DismissAlarmReceiver.class);
 
-        /*Calendar c = Calendar.getInstance();
+        *//*Calendar c = Calendar.getInstance();
         //create a pending intent which will trigger at the moment of the alarm
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(this, DismissAlarmReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 1, intent, 0);
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pendingIntent);*/
-    }
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pendingIntent);*//*
+    }*/
 
 }

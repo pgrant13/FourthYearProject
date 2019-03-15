@@ -1,10 +1,12 @@
 package com.philips.lighting.hue.demo.huequickstartapp;
 
 import android.app.AlarmManager;
+import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.MediaPlayer;
@@ -70,6 +72,7 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
     private CheckBox smartPlug2Checkbox;
     private CheckBox watchVibrationCheckbox;
     private Spinner alarmFadeInSpinner;
+    private AlertDialog.Builder builder; //alert dialog for dismissing alarm
     private String smartplug1 = "8006D533442D25A6A864522D93217C121A255439";
     private String smartplug2 = "80069E32EB7ED682EA56429752DDE14A1A25686B";
     private int maxHueBrightness = 254;
@@ -116,7 +119,8 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
         //initialize the alarm receivers
         registerReceiver(alarmReceiver, new IntentFilter("ALARM_RECEIVED")); //Alarm Receiver
         registerReceiver(fadeInAlarmReceiver, new IntentFilter("ALARM_RECEIVED_FADE_IN")); //Alarm Receiver
-        registerReceiver(dismissAlarmReceiver, new IntentFilter("DISMISS_ALARM_RECEIVED")); //Dismiss Alarm Receiver
+        //registerReceiver(dismissAlarmReceiver, new IntentFilter("DISMISS_ALARM_RECEIVED")); //Dismiss Alarm Receiver
+        builder = new AlertDialog.Builder(this); //Alert Dialog for Alarm Dismissing
 
         //initialize the checkboxes
         phoneSoundCheckbox = (CheckBox) findViewById(R.id.phone_sound_checkbox);
@@ -194,7 +198,7 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
         Log.i(TAG, "onDestroy");
         unregisterReceiver(alarmReceiver);
         unregisterReceiver(fadeInAlarmReceiver);
-        unregisterReceiver(dismissAlarmReceiver);
+        //unregisterReceiver(dismissAlarmReceiver);
         //onSaveInstanceState();
     }
 
@@ -314,23 +318,21 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
                 turnOnWatchVibration();//turn on the phone sound alarm
             }*/
 
-            /*These have been moved to the FadeIn Alarm
+            //Alert message pop up dialog to dismiss alarm ****
+            builder.setMessage(R.string.alarm)
+                    .setPositiveButton(R.string.dismiss, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dismissAlarm(); //function to dismiss the alarm
+                        }
+                    })
+                    /*.setNegativeButton(R.string.snooze, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // Snooze Alarm? *** to be implemented
+                        }
+                    })*/;
+            AlertDialog alertdialog = builder.create();
+            alertdialog.show();
 
-            //if the Hue Lights are selected to be used by the user******:
-            if (hueLightsCheckbox.isChecked()) { //used in hueAlarmReceiver broadcast receiver for dimming
-                turnOnHueLights(8337,254);//turn on the hue lights
-                //int hueBrightness = 254;
-            }
-
-            //if smart plug is selected to be used by the user****:
-            if (smartPlug1Checkbox.isChecked()) { //used in hueAlarmReceiver broadcast receiver for warming
-                setSmartPlugState(smartplug1,"1");//turn on the smartplug1
-            }
-
-            //if smart plug is selected to be used by the user****:
-            if (smartPlug2Checkbox.isChecked()) { //used in hueAlarmReceiver broadcast receiver for humidifying
-                setSmartPlugState(smartplug2,"1");//turn on the smartplug2
-            }*/
             Log.i(TAG, "Received Alarm Broadcast");
         }
     };
@@ -367,7 +369,7 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
     /**
      * dismissAlarmReceiver from the dismissAlarmReceiver class. Used to call the individual dismiss alarm functions
      */
-    BroadcastReceiver dismissAlarmReceiver = new BroadcastReceiver() {
+    /*BroadcastReceiver dismissAlarmReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             // Dismiss Alarm
@@ -378,7 +380,37 @@ public class AlarmsActivity extends AppCompatActivity implements TimePickerDialo
             setCheckboxEditable(true);//allow editing of the alarm checkboxes
             Log.i(TAG, "Received Dismiss Alarm Broadcast");
         }
-    };
+    };*/
+
+    /**
+     * Todo: to stop the alarm sound, send broadcast to AlarmsActivity.java to kill the media player object. Maybe have dismiss notification on all alarm activities??
+     * problem is that the Activity dies/is garbage collected so can't kill the media player object. Need UI and Activity to persist
+     */
+    private void dismissAlarm(){
+        // Dismiss Alarm
+        //if smart plug is selected to be used by the user:
+        if (smartPlug1Checkbox.isChecked()) {
+            setSmartPlugState(smartplug1,"0");//turn off the smartplug1
+        }
+
+        //if smart plug is selected to be used by the user:
+        if (smartPlug2Checkbox.isChecked()) {
+            setSmartPlugState(smartplug2,"0");//turn off the smartplug2
+        }
+
+        //if smart plug is selected to be used by the user:
+        if (phoneSoundCheckbox.isChecked()) {
+            turnOffPhoneSound();//turn off the phone sound
+        }
+
+        //if watch vibration is selected to be used by the user:
+            /*if (watchVibrationCheckbox.isChecked()) {
+                //turnOffWatchVibration();//turn off the phone sound alarm
+            }*/
+
+        setCheckboxEditable(true);//allow editing of the alarm checkboxes
+        Log.i(TAG, "Received Dismiss Alarm Broadcast");
+    }
 
     /**
      * Task to increment Hue Brightness by 1 (Brightness from 0-254)

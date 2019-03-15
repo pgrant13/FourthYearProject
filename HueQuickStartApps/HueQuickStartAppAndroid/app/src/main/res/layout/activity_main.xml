@@ -20,7 +20,6 @@
             app:layout_constraintBottom_toTopOf="@id/linearLayout1"
             app:srcCompat="@drawable/sleep_stage_example" />
 
-        <!--to implement navigation between tabs - want to have even spacing along bottom-->
         <LinearLayout
             android:id="@+id/linearLayout1"
             android:layout_width="0dp"
@@ -28,7 +27,7 @@
             android:layout_marginBottom="0dp"
             android:background="#ffffff"
             android:orientation="horizontal"
-            android:padding="10dp"
+            android:paddingVertical="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
