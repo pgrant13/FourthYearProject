@@ -20,6 +20,8 @@ import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.UUID;
+import java.text.DateFormat;
+import java.util.Date;
 
 /**
  * Activity to setup the TPLink smartplug
@@ -55,6 +57,7 @@ public class SetupTPLinkActivity extends AppCompatActivity implements View.OnCli
     byte buffer[];
     int bufferPosition;
     boolean stopThread;
+    private String currentDateTimeString;
     //end of Halim's variables
 
     @Override
@@ -80,7 +83,6 @@ public class SetupTPLinkActivity extends AppCompatActivity implements View.OnCli
         //sendButton = (Button) findViewById(R.id.buttonSend);
         clearButton = (Button) findViewById(R.id.buttonClear);
         stopButton = (Button) findViewById(R.id.buttonStop);
-        editText = (EditText) findViewById(R.id.editText);
         textView = (TextView) findViewById(R.id.textView);
         setUiEnabled(false);
         //end Halim's onCreate()
@@ -284,26 +286,31 @@ public class SetupTPLinkActivity extends AppCompatActivity implements View.OnCli
 //                                        seeData = false;
 //                                    }
 
-                                    textView.append ("Temp = ");
+                                    currentDateTimeString = DateFormat.getDateTimeInstance().format(new Date());
+
+                                    textView.setText(currentDateTimeString);
+                                    textView.append ("\nTemp = ");
                                     textView.append(String.valueOf(temp3));
-                                    textView.append (" Humidity = ");
-                                    textView.append(String.valueOf(humid3));
+
                                     //todo this is where we will call the turnOffSmartPlugFunction for Humidifier
-                                    if (temp3>25){
-                                        textView.append ("Temperature Above 25C, turning OFF Heat");
+                                    if (temp3>30){
+                                        textView.append ("(Above 30C, Heat OFF)");
                                         setSmartPlugState(smartplug1,"0"); //turn Off smartplug
-                                    }else if (humid3<20){
-                                        textView.append ("Temperature Below 20C, turning ON Heat");
+                                    }else if (temp3<25){
+                                        textView.append ("(Below 25C, Heat ON)");
                                         setSmartPlugState(smartplug1,"1"); //turn Off smartplug
                                     }
-                                    if (humid3>50){
-                                        textView.append ("Humidity Above 50%, turning OFF Humidifier");
+
+                                    textView.append ("\nHumidity = ");
+                                    textView.append(String.valueOf(humid3));
+
+                                    if (humid3>60){
+                                        textView.append ("(Above 60%, Humidifier OFF)");
                                         setSmartPlugState(smartplug2,"0"); //turn Off smartplug
-                                    }else if (humid3<30){
-                                        textView.append ("Humidity Below 30%, turning ON Humidifier");
+                                    }else if (humid3<40){
+                                        textView.append ("(Below 40%, Humidifier ON)");
                                         setSmartPlugState(smartplug2,"1"); //turn Off smartplug
                                     }
-                                    textView.append ("\n");
                                 }
                             });
 
